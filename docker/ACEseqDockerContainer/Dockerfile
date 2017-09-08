@@ -47,9 +47,14 @@ RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 	rm -rf $BINARIES_FOLDER/Roddy &&  \
 	git clone https://github.com/eilslabs/Roddy.git &&  \
 	cd Roddy &&  git checkout 2.4.8b &&  mkdir -p plugins_R2.4 &&  \
-	git submodule foreach git fetch --tags &&
-	git submodule update --init --recursive &&
+	ls -l && \
+	ls -l .git/ && \
+	git submodule add -f  https://github.com/eilslabs/Roddy-Base-Plugin.git dist/plugins/PluginBase && \
+	git submodule add -f  https://github.com/eilslabs/Roddy-Default-Plugin.git dist/plugins/DefaultPlugin && \
+	git submodule foreach git fetch --tags && \
+	git submodule update --init --recursive && \
 	cd $RODDY_BASE_PLUGINS &&  \
+	ls -l && \
 	(cd DefaultPlugin && git checkout 1.2.0) && \
 	(cd PluginBase && git checkout 1.2.0) && \
 	cp -r DefaultPlugin DefaultPlugin_1.2.0 &&  \
