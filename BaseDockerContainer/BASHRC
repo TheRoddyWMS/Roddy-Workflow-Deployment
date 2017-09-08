@@ -1,0 +1,9 @@
+export PATH=$PATH:/home/roddy/binaries/Platypus_0.7.4
+alias ls='ls --color'
+alias ll='ls -hCl'
+alias wl='wc -l'
+alias ..='cd ..'
+
+PS1="\[$(pwd)\]\u@\h: \w > "
+
+#sudo bash -c "source /home/roddy/binaries/gridEngineSetup.sh && jumpStartGridEngine  && restartGridEngine"

@@ -1,0 +1,32 @@
+<configuration configurationType='project' name='ACEseq' description='' >
+
+  <availableAnalyses>
+    <analysis id="copyNumberEstimation" configuration="copyNumberEstimationAnalysis"
+              useplugin="ACEseqWorkflow:current"/>
+  </availableAnalyses>
+
+  <configurationvalues>
+   <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA}" type="string"/>
+   <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
+                description="Name of the Conda environment on the execution hosts. Used by the environment setup script in resources/analysisTools/copyNumberEstimation/enviroments."/>
+
+    <cvalue name='inputBaseDirectory' value='pathToPidStructure/' type='path'/>
+    <cvalue name='outputBaseDirectory'  value='pathToPidStructure/' type='path'/>
+    <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
+
+<!-- Settings for processing with SV files deactivate if it is to be run without SV input
+    <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/nameOfDirectoryWithSVResults' type="path"/>
+    <cvalue name='runWithSv' value='true' type="boolean"/>
+    <cvalue name='SV' value='yes' type="boolean"/>
+-->
+  </configurationvalues>
+
+<!--Adjust this to the filename of your SV bedpe with SV points
+      <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly"
+                  selectiontag="dellyFileTag"
+                  pattern='${svOutputDirectory}/${pid}_svs.bedpe'/>
+      </filenames>
+-->
+
+</configuration>

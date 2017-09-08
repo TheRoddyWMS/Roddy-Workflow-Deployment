@@ -1,0 +1,14 @@
+<configuration configurationType='project' name='coWorkflowsTestProject'
+               description='A test project for the purity estimation analysis.' imports=""
+               usedresourcessize="l">
+    <availableAnalyses>
+        <analysis id='test' configuration='testAnalysis' useplugin="TestPluginWithJarFile"/>
+        <analysis id='aceseq' configuration='copyNumberEstimationAnalysis' useplugin="ACEseqWorkflow:1.2.10"/>
+    </availableAnalyses>
+    <configurationvalues>
+        <cvalue name='inputBaseDirectory' value='$USERHOME/temp/roddyLocalTest/testproject/vbp' type='path'/>
+        <cvalue name='outputBaseDirectory' value='$USERHOME/temp/roddyLocalTest/testproject/rpp' type='path'/>
+        <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
+        <cvalue name='outputAllowAccessRightsModification' value='false' type="boolean"/>
+    </configurationvalues>
+</configuration>
