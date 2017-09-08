@@ -43,16 +43,20 @@ ENV ACESEQ_FOLDER $RODDY_PLUGINS_R2_4/ACEseqWorkflow_1.2.10
 ENV COWORKFLOWS_FOLDER $RODDY_PLUGINS_R2_4/COWorkflowsBasePlugins
 
 # Prepare the Roddy setup, also prepare Default and Base plugin
-RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER; \
-	rm -rf $BINARIES_FOLDER/Roddy; \
-	git clone https://github.com/eilslabs/Roddy.git; \
-	cd Roddy; git checkout develop; mkdir -p plugins_R2.4; \
-	cd $RODDY_BASE_PLUGINS; \
-	cp -r DefaultPlugin DefaultPlugin_1.2.0; \
-	cp -r PluginBase PluginBase_1.2.0; \
-	if [ ! -d PluginBase_1.2.0/resources/analysisTools ]; then mkdir -p PluginBase_1.2.0/resources/analysisTools; fi # HOTFIX!
+RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
+	rm -rf $BINARIES_FOLDER/Roddy &&  \
+	git clone https://github.com/eilslabs/Roddy.git &&  \
+	cd Roddy &&  git checkout 2.4.8b &&  mkdir -p plugins_R2.4 &&  \
+	git submodule foreach git fetch --tags &&
+	git submodule update --init --recursive &&
+	cd $RODDY_BASE_PLUGINS &&  \
+	(cd DefaultPlugin && git checkout 1.2.0) && \
+	(cd PluginBase && git checkout 1.2.0) && \
+	cp -r DefaultPlugin DefaultPlugin_1.2.0 &&  \
+	cp -r PluginBase PluginBase_1.2.0
 
-# Install ACEseq, so we can install the Conda environment
+# Install ACEseq, so we can install the Conda environment, the only reason, why it is before the other installation commands is, that the process 
+# takes quite long and it is nicer for intermediate builds.
 RUN cd $RODDY_PLUGINS_R2_4 && \
 	git clone https://github.com/eilslabs/ACEseqWorkflow ACEseqWorkflow_1.2.10 && \
 	cd ACEseqWorkflow_1.2.10 &&  \
@@ -72,18 +76,15 @@ RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
 RUN cd $BINARIES_FOLDER && \
 	git clone https://github.com/eilslabs/BatchEuphoria && \
 	cd $BINARIES_FOLDER/BatchEuphoria && \
-	git checkout SGESupport && \
+	git checkout SGE-Direct-Beta-Release-1 && \
 	./gradlew build	&& cp build/libs/BatchEuphoria.jar $BINARIES_FOLDER/Roddy/dist/bin/current/lib 
 	
 RUN cd $BINARIES_FOLDER && \
 	git clone https://github.com/eilslabs/RoddyToolLib.git RoddyToolLib && \
 	cd $BINARIES_FOLDER/RoddyToolLib && \
+	git checkout BEwSGEaDirectSup_R2.4.8b && \
 	./gradlew build && ls -lahtr build/libs && cp $(ls -ahtr build/libs/R* | tail -n 1) $BINARIES_FOLDER/Roddy/dist/bin/current/lib/RoddyToolLib.jar
 	
-RUN cd ~/binaries/Roddy && \
-	ls -l dist/bin/current/lib && \
-	git checkout 2.4.5
-
 RUN cd $RODDY_PLUGINS_R2_4 && git clone https://github.com/eilslabs/COWorkflowsBasePlugin COWorkflowsBasePlugin_1.0.0 && \
 	cd COWorkflowsBasePlugin_1.0.0 && git checkout 1.0.0
 
