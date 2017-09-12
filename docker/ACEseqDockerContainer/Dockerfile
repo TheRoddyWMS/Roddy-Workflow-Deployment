@@ -46,7 +46,7 @@ ENV COWORKFLOWS_FOLDER $RODDY_PLUGINS_R2_4/COWorkflowsBasePlugins
 RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 	rm -rf $BINARIES_FOLDER/Roddy &&  \
 	git clone https://github.com/eilslabs/Roddy.git &&  \
-	cd Roddy &&  git checkout 2.4.8b &&  mkdir -p plugins_R2.4 &&  \
+	cd Roddy &&  git checkout 2.4.9 &&  mkdir -p plugins_R2.4 &&  \
 	ls -l && \
 	ls -l .git/ && \
 	git submodule add -f  https://github.com/eilslabs/Roddy-Base-Plugin.git dist/plugins/PluginBase && \
