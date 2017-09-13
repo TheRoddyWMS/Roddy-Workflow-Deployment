@@ -87,6 +87,7 @@ echo docker run \
 		-v ${referenceGenomePath}:${referenceGenomePath} \
 		-v ${referenceFilePath}:${referenceFilePath} \
 		-v `readlink -f config`:${configurationFolder} \
+		--rm \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 		-t -i aceseqimage \
 		/bin/bash -c "$call; ec=$?"
