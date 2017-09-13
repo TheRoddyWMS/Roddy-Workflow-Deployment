@@ -1,17 +1,21 @@
 #!/bin/bash
 # 1: Run mode, which might be run or testrun
 # 2: The configuration identifier, normally ACEseq
-# 3: Dataset identifiert / PID
-# 4: The control bam file
-# 5: The tumor bam file
-# 6: The control bam sample name
-# 7: The tumor bam sample name
-# 8: The reference genome file path
-# 9: The reference files path
-# 10: The output folder
+# 3: Dataset identifier / PID
+# 4: Control bam file
+# 5: Tumor bam file
+# 6: Control bam sample name
+# 7: Tumor bam sample name
+# 8: Reference genome file path
+# 9: Reference files path
+# 10: Output folder
 # 11: Optional: The SV file
 
-[[ $# -lt 10 ]] && echo "Wrong number of arguments" && (head -n 10 $0 | tail -n+2) && exit 1
+if [[ $# -lt 10 ]]; then
+	echo "Wrong number of arguments"
+	head -n 12 "$0" | tail -n+2
+	exit 1
+fi
 
 ## Read in parameters and check files and folders
 mode=${1}
