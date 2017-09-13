@@ -2,7 +2,7 @@
 
   <availableAnalyses>
     <analysis id="copyNumberEstimation" configuration="copyNumberEstimationAnalysis"
-              useplugin="ACEseqWorkflow:current"/>
+              useplugin="ACEseqWorkflow:1.2.10-0"/>
   </availableAnalyses>
 
   <configurationvalues>
