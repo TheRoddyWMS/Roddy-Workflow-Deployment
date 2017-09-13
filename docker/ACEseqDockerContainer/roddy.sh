@@ -79,18 +79,14 @@ tumorSample="tumorSample:${inputBamTumorSampleName}
 # Kortine, do you need to set this? ,REFERENCE_GENOME:${referenceGenome}
 call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample}\""
 
-# Change group and user id to match your system user and group
-sed "s/:1000:1000:/:`id -u`:`id -g`:/" passwdfile > passwdtemp
-sed "s/:1000:/:`id -g`:/" groupfile > grouptemp
-
  
-echo docker run --user `id -u`:`id -g` -v `readlink -f passwdtemp`:/etc/passwd \
-		   -v `readlink -f grouptemp`:/etc/group \
-		   -v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
-		   -v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
-		   -v ${workspaceLcl}:${workspace} \
-		   -v ${referenceGenomePath}:${referenceGenomePath} \
-		   -v ${referenceFilePath}:${referenceFilePath} \
-		   -v `readlink -f config`:${configurationFolder} \
-		   -t -i aceseqimage \
-			/bin/bash -c "$call; ec=$?"
+echo docker run \
+		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
+		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
+		-v ${workspaceLcl}:${workspace} \
+		-v ${referenceGenomePath}:${referenceGenomePath} \
+		-v ${referenceFilePath}:${referenceFilePath} \
+		-v `readlink -f config`:${configurationFolder} \
+		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
+		-t -i aceseqimage \
+		/bin/bash -c "$call; ec=$?"

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 [[ -f /home/roddy/debugStuff.sh ]] && bash /home/roddy/debugStuff.sh
 
 export HOSTNAME=`hostname`
@@ -40,6 +39,12 @@ sleep 2
 qstat
 
 
+# change UID and GID of roddy user to user who launched the docker
+[ -n "$RUN_AS_UID" ] && sudo usermod -u $RUN_AS_UID roddy
+[ -n "$RUN_AS_GID" ] && sudo groupmod -g $RUN_AS_GID roddy
 
+# give normal users permissions on std* (required with gosu)
+sudo chmod 666 /dev/std{err,out,in}
 
-exec "$*"
+# run workfow as roddy user with gosu
+gosu roddy "$@"

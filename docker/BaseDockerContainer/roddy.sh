@@ -18,4 +18,5 @@ docker run -v `readlink -f ${2}`:${inputBamCtrl} -v `readlink -f ${2}.bai`:${inp
 	   -v `readlink -f ${3}`:${inputBamTumor} -v `readlink -f ${3}`.bai:${inputBamTumor}.bai \
 	   -v `readlink -f $4`:/workspace/output \
 	   -t -i roddyplatypus \
+	   --user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 	   /bin/bash -c "mkdir -p /workspace/output/$pid/alignment; ln -sf /workspace/input/*.bam* /workspace/output/$pid/alignment; $call; chmod -R a+w /workspace/output"
