@@ -75,8 +75,9 @@ bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
 baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
+outputBaseDirectory="outputBaseDirectory:${workspace}"
 
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference}\""
+call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference},${outputBaseDirectory}\""
 
  
 echo docker run \
