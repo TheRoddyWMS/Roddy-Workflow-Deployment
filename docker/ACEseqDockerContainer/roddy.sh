@@ -70,7 +70,7 @@ inputBamCtrl=${inputBamCtrlLcl}
 inputBamTumor=${inputBamTumorLcl}
 
 roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
-roddyConfig="--useconfig=/home/roddy/config/config.ini"
+roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
