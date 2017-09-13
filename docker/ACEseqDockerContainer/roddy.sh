@@ -86,7 +86,6 @@ echo docker run \
 		-v ${workspaceLcl}:${workspace} \
 		-v "${referenceFilesPath}:${referenceFilesPath}" \
 		-v "${configurationFolderLcl}:${configurationFolder}" \
-		-v `readlink -f config`:${configurationFolder} \
 		--rm \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 		-t -i aceseqimage \
