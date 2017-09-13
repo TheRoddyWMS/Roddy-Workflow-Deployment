@@ -14,6 +14,8 @@
     <cvalue name='outputBaseDirectory'  value='pathToPidStructure/' type='path'/>
     <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
 
+    <cvalue name='outputAllowAccessRightsModification' value='false' type="boolean"/>
+
 <!-- Settings for processing with SV files deactivate if it is to be run without SV input
     <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/nameOfDirectoryWithSVResults' type="path"/>
     <cvalue name='runWithSv' value='true' type="boolean"/>
