@@ -1,34 +1,36 @@
 #!/bin/bash
 # 1: Run mode, which might be run or testrun
 # 2: The configuration identifier, normally ACEseq
-# 3: Dataset identifier / PID
-# 4: Control bam file
-# 5: Tumor bam file
-# 6: Control bam sample name
-# 7: Tumor bam sample name
-# 8: Reference genome file path
-# 9: Reference files path
-# 10: Output folder
-# 11: Optional: The SV file
+# 3: Configuration directory
+# 4: Dataset identifier / PID
+# 5: Control bam file
+# 6: Tumor bam file
+# 7: Control bam sample name
+# 8: Tumor bam sample name
+# 9: Reference genome file path
+# 10: Reference files path
+# 11: Output folder
+# 12: Optional: The SV file
 
-if [[ $# -lt 10 ]]; then
+if [[ $# -lt 11 ]]; then
 	echo "Wrong number of arguments"
-	head -n 12 "$0" | tail -n+2
+	head -n 13 "$0" | tail -n+2
 	exit 1
 fi
 
 ## Read in parameters and check files and folders
 mode=${1}
 configurationIdentifier=${2}
-pid=${3}
+configurationFolderLcl=`readlink -f "${3}"`
+pid=${4}
 
-inputBamCtrlLcl=`readlink -f ${4}`
-inputBamTumorLcl=`readlink -f ${5}`
-inputBamCtrlSampleName=${6}
-inputBamTumorSampleName=${7}
-referenceGenomePath=`dirname ${8}`
-referenceFilePath=`dirname ${9}`
-workspaceLcl=`readlink -f ${10}`
+inputBamCtrlLcl=`readlink -f ${5}`
+inputBamTumorLcl=`readlink -f ${6}`
+inputBamCtrlSampleName=${7}
+inputBamTumorSampleName=${8}
+referenceGenomePath=`dirname ${9}`
+referenceFilePath=`dirname ${10}`
+workspaceLcl=`readlink -f ${11}`
 
 function checkFile() {
 	local _file=${1}
@@ -53,9 +55,9 @@ checkDir $referenceGenomePath
 checkDir $referenceFilePath 
 checkDir $workspaceLcl rw
 
-if [[ $# -eq 11 ]]; then
+if [[ $# -eq 12 ]]; then
 	# Either use the file
-	local svFile=`readlink -f ${11}`
+	local svFile=`readlink -f ${12}`
 	checkFile $svFile
 	svBlock="svFile:${svFile}"
 else 
@@ -90,6 +92,7 @@ echo docker run \
 		-v ${workspaceLcl}:${workspace} \
 		-v ${referenceGenomePath}:${referenceGenomePath} \
 		-v ${referenceFilePath}:${referenceFilePath} \
+		-v "${configurationFolderLcl}:${configurationFolder}" \
 		-v `readlink -f config`:${configurationFolder} \
 		--rm \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
