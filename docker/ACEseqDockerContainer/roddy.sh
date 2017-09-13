@@ -1,20 +1,19 @@
 #!/bin/bash
-# 1: Run mode, which might be run or testrun
-# 2: The configuration identifier, normally ACEseq
+# 1: Run mode, which might be "run" or "testrun"
+# 2: Configuration identifier, normally "ACEseq"
 # 3: Configuration directory
 # 4: Dataset identifier / PID
 # 5: Control bam file
 # 6: Tumor bam file
 # 7: Control bam sample name
 # 8: Tumor bam sample name
-# 9: Reference genome file path
-# 10: Reference files path
-# 11: Output folder
-# 12: Optional: The SV file
+# 9: Reference files path
+# 10: Output folder
+# 11: Optional: The SV file
 
-if [[ $# -lt 11 ]]; then
+if [[ $# -lt 10 ]]; then
 	echo "Wrong number of arguments"
-	head -n 13 "$0" | tail -n+2
+	head -n 12 "$0" | tail -n+2
 	exit 1
 fi
 
@@ -24,13 +23,12 @@ configurationIdentifier=${2}
 configurationFolderLcl=`readlink -f "${3}"`
 pid=${4}
 
-inputBamCtrlLcl=`readlink -f ${5}`
-inputBamTumorLcl=`readlink -f ${6}`
+inputBamCtrlLcl=`readlink -f "${5}"`
+inputBamTumorLcl=`readlink -f "${6}"`
 inputBamCtrlSampleName=${7}
 inputBamTumorSampleName=${8}
-referenceGenomePath=`dirname ${9}`
-referenceFilePath=`dirname ${10}`
-workspaceLcl=`readlink -f ${11}`
+referenceFilesPath=`dirname "${9}"`
+workspaceLcl=`readlink -f "${10}"`
 
 function checkFile() {
 	local _file=${1}
@@ -51,13 +49,12 @@ function checkDir() {
 [[ $mode -ne "run" && $mode -ne "testrun" ]] && echo "Mode must be run or testrun" && exit 2
 checkFile $inputBamCtrlLcl 
 checkFile $inputBamTumorLcl 
-checkDir $referenceGenomePath 
-checkDir $referenceFilePath 
+checkDir $referenceFilesPath 
 checkDir $workspaceLcl rw
 
-if [[ $# -eq 12 ]]; then
+if [[ $# -eq 11 ]]; then
 	# Either use the file
-	local svFile=`readlink -f ${12}`
+	local svFile=`readlink -f ${11}`
 	checkFile $svFile
 	svBlock="svFile:${svFile}"
 else 
@@ -72,26 +69,21 @@ configurationFolder=/home/roddy/config
 inputBamCtrl=${inputBamCtrlLcl}
 inputBamTumor=${inputBamTumorLcl}
 
-# Kortine, you need to set these!
-referenceGenomeFolder=... 
-referenceFilesFolder=
-
 roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
 roddyConfig="--useconfig=/home/roddy/config/config.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 tumorSample="tumorSample:${inputBamTumorSampleName}
+baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
 
-# Kortine, do you need to set this? ,REFERENCE_GENOME:${referenceGenome}
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample}\""
+call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference}\""
 
  
 echo docker run \
 		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
 		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
 		-v ${workspaceLcl}:${workspace} \
-		-v ${referenceGenomePath}:${referenceGenomePath} \
-		-v ${referenceFilePath}:${referenceFilePath} \
+		-v "${referenceFilesPath}:${referenceFilesPath}" \
 		-v "${configurationFolderLcl}:${configurationFolder}" \
 		-v `readlink -f config`:${configurationFolder} \
 		--rm \
