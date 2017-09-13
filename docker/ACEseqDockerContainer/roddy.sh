@@ -73,7 +73,7 @@ roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
 roddyConfig="--useconfig=/home/roddy/config/config.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
-tumorSample="tumorSample:${inputBamTumorSampleName}
+tumorSample="tumorSample:${inputBamTumorSampleName}"
 baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
 
 call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference}\""
