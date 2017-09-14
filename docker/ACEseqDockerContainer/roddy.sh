@@ -1,30 +1,34 @@
 #!/bin/bash
-# 1: Run mode, which might be run or testrun
-# 2: The configuration identifier, normally ACEseq
-# 3: Dataset identifiert / PID
-# 4: The control bam file
-# 5: The tumor bam file
-# 6: The control bam sample name
-# 7: The tumor bam sample name
-# 8: The reference genome file path
-# 9: The reference files path
-# 10: The output folder
+# 1: Run mode, which might be "run" or "testrun"
+# 2: Configuration identifier, normally "ACEseq"
+# 3: Configuration directory
+# 4: Dataset identifier / PID
+# 5: Control bam file
+# 6: Tumor bam file
+# 7: Control bam sample name
+# 8: Tumor bam sample name
+# 9: Reference files path
+# 10: Output folder
 # 11: Optional: The SV file
 
-[[ $# -lt 10 ]] && echo "Wrong number of arguments" && (head -n 10 $0 | tail -n+2) && exit 1
+if [[ $# -lt 10 ]]; then
+	echo "Wrong number of arguments"
+	head -n 12 "$0" | tail -n+2
+	exit 1
+fi
 
 ## Read in parameters and check files and folders
 mode=${1}
 configurationIdentifier=${2}
-pid=${3}
+configurationFolderLcl=`readlink -f "${3}"`
+pid=${4}
 
-inputBamCtrlLcl=`readlink -f ${4}`
-inputBamTumorLcl=`readlink -f ${5}`
-inputBamCtrlSampleName=${6}
-inputBamTumorSampleName=${7}
-referenceGenomePath=`dirname ${8}`
-referenceFilePath=`dirname ${9}`
-workspaceLcl=`readlink -f ${10}`
+inputBamCtrlLcl=`readlink -f "${5}"`
+inputBamTumorLcl=`readlink -f "${6}"`
+inputBamCtrlSampleName=${7}
+inputBamTumorSampleName=${8}
+referenceFilesPath=`dirname "${9}"`
+workspaceLcl=`readlink -f "${10}"`
 
 function checkFile() {
 	local _file=${1}
@@ -45,8 +49,7 @@ function checkDir() {
 [[ $mode -ne "run" && $mode -ne "testrun" ]] && echo "Mode must be run or testrun" && exit 2
 checkFile $inputBamCtrlLcl 
 checkFile $inputBamTumorLcl 
-checkDir $referenceGenomePath 
-checkDir $referenceFilePath 
+checkDir $referenceFilesPath 
 checkDir $workspaceLcl rw
 
 if [[ $# -eq 11 ]]; then
@@ -66,31 +69,24 @@ configurationFolder=/home/roddy/config
 inputBamCtrl=${inputBamCtrlLcl}
 inputBamTumor=${inputBamTumorLcl}
 
-# Kortine, you need to set these!
-referenceGenomeFolder=... 
-referenceFilesFolder=
-
 roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
-roddyConfig="--useconfig=/home/roddy/config/config.ini"
+roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
-tumorSample="tumorSample:${inputBamTumorSampleName}
+tumorSample="tumorSample:${inputBamTumorSampleName}"
+baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
+outputBaseDirectory="outputBaseDirectory:${workspace}"
 
-# Kortine, do you need to set this? ,REFERENCE_GENOME:${referenceGenome}
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample}\""
-
-# Change group and user id to match your system user and group
-sed "s/:1000:1000:/:`id -u`:`id -g`:/" passwdfile > passwdtemp
-sed "s/:1000:/:`id -g`:/" groupfile > grouptemp
+call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference},${outputBaseDirectory}\""
 
  
-echo docker run --user `id -u`:`id -g` -v `readlink -f passwdtemp`:/etc/passwd \
-		   -v `readlink -f grouptemp`:/etc/group \
-		   -v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
-		   -v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
-		   -v ${workspaceLcl}:${workspace} \
-		   -v ${referenceGenomePath}:${referenceGenomePath} \
-		   -v ${referenceFilePath}:${referenceFilePath} \
-		   -v `readlink -f config`:${configurationFolder} \
-		   -t -i aceseqimage \
-			/bin/bash -c "$call; ec=$?"
+echo docker run \
+		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
+		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
+		-v ${workspaceLcl}:${workspace} \
+		-v "${referenceFilesPath}:${referenceFilesPath}" \
+		-v "${configurationFolderLcl}:${configurationFolder}" \
+		--rm \
+		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
+		-t -i aceseqimage \
+		/bin/bash -c "$call; ec=$?"

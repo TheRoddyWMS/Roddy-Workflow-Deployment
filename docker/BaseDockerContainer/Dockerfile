@@ -19,7 +19,7 @@ RUN apt-get update && \
 					   libgfortran3 libglu1-mesa-dev wget libfreetype6 libfreetype6-dev libpng-dev libcurl4-openssl-dev \
 					   gfortran libcairo2 libjpeg-dev ghostscript vim sudo bsdmainutils aptitude \
 					   gtk2-engines libxtst6 libxxf86vm1 freeglut3 libxslt1.1 \
-					   python-gi-cairo openjdk-8-jdk;
+					   python-gi-cairo openjdk-8-jdk gosu;
 
 RUN cpanm XML::Parser --notest &&  \
     cpanm Math::CDF --notest

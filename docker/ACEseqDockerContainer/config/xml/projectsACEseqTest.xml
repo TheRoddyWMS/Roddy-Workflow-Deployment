@@ -2,7 +2,7 @@
 
   <availableAnalyses>
     <analysis id="copyNumberEstimation" configuration="copyNumberEstimationAnalysis"
-              useplugin="ACEseqWorkflow:current"/>
+              useplugin="ACEseqWorkflow:1.2.10-0"/>
   </availableAnalyses>
 
   <configurationvalues>
@@ -13,6 +13,8 @@
     <cvalue name='inputBaseDirectory' value='pathToPidStructure/' type='path'/>
     <cvalue name='outputBaseDirectory'  value='pathToPidStructure/' type='path'/>
     <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
+
+    <cvalue name='outputAllowAccessRightsModification' value='false' type="boolean"/>
 
 <!-- Settings for processing with SV files deactivate if it is to be run without SV input
     <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/nameOfDirectoryWithSVResults' type="path"/>
