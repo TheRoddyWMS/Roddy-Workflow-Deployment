@@ -76,11 +76,14 @@ sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
 baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
 outputBaseDirectory="outputBaseDirectory:${workspace}"
+outputFileGroup="outputFileGroup:roddy"
 
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference},${outputBaseDirectory}\""
+call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup}\""
 
+absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
+#echo $absoluteCall
  
-echo docker run \
+docker run \
 		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
 		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
 		-v ${workspaceLcl}:${workspace} \
@@ -89,4 +92,7 @@ echo docker run \
 		--rm \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 		-t -i aceseqimage \
-		/bin/bash -c "$call; ec=$?"
+		/bin/bash -c "$absoluteCall"
+
+
+#'[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 60; done; echo \"done\";'"

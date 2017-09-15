@@ -46,11 +46,11 @@ ENV COWORKFLOWS_FOLDER $RODDY_PLUGINS_R2_4/COWorkflowsBasePlugins
 RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 	rm -rf $BINARIES_FOLDER/Roddy &&  \
 	git clone https://github.com/eilslabs/Roddy.git &&  \
-	cd Roddy &&  git checkout 2.4.9 &&  mkdir -p plugins_R2.4 &&  \
+	cd Roddy &&  git checkout 2.4.10b &&  mkdir -p plugins_R2.4 &&  \
 	ls -l && \
 	ls -l .git/ && \
-	git submodule add -f  https://github.com/eilslabs/Roddy-Base-Plugin.git dist/plugins/PluginBase && \
-	git submodule add -f  https://github.com/eilslabs/Roddy-Default-Plugin.git dist/plugins/DefaultPlugin && \
+#	git submodule add -f  https://github.com/eilslabs/Roddy-Base-Plugin.git dist/plugins/PluginBase && \
+#	git submodule add -f  https://github.com/eilslabs/Roddy-Default-Plugin.git dist/plugins/DefaultPlugin && \
 	git submodule foreach git fetch --tags && \
 	git submodule update --init --recursive && \
 	cd $RODDY_BASE_PLUGINS &&  \
@@ -78,17 +78,18 @@ RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
 	rm $groovyArchive && \
 	ln -sf /usr/lib/jvm/java-8-openjdk-amd64 ~/.roddy/runtimeDevel/jdk && ln -sf ~/.roddy/runtimeDevel/jdk ~/.roddy/runtimeDevel/jdk1.8.0_131
 
-RUN cd $BINARIES_FOLDER && \
-	git clone https://github.com/eilslabs/BatchEuphoria && \
-	cd $BINARIES_FOLDER/BatchEuphoria && \
-	git checkout SGE-Direct-Beta-Release-1 && \
-	./gradlew build	&& cp build/libs/BatchEuphoria.jar $BINARIES_FOLDER/Roddy/dist/bin/current/lib 
+# Currently not needed. Both are packed in R2.4.10
+#RUN cd $BINARIES_FOLDER && \
+#	git clone https://github.com/eilslabs/BatchEuphoria && \
+#	cd $BINARIES_FOLDER/BatchEuphoria && \
+#	git checkout SGE-Direct-Beta-Release-1 && \
+#	./gradlew build	&& cp build/libs/BatchEuphoria.jar $BINARIES_FOLDER/Roddy/dist/bin/current/lib 
 	
-RUN cd $BINARIES_FOLDER && \
-	git clone https://github.com/eilslabs/RoddyToolLib.git RoddyToolLib && \
-	cd $BINARIES_FOLDER/RoddyToolLib && \
-	git checkout BEwSGEaDirectSup_R2.4.8b && \
-	./gradlew build && ls -lahtr build/libs && cp $(ls -ahtr build/libs/R* | tail -n 1) $BINARIES_FOLDER/Roddy/dist/bin/current/lib/RoddyToolLib.jar
+#RUN cd $BINARIES_FOLDER && \
+#	git clone https://github.com/eilslabs/RoddyToolLib.git RoddyToolLib && \
+#	cd $BINARIES_FOLDER/RoddyToolLib && \
+#	git checkout BEwSGEaDirectSup_R2.4.8b && \
+#	./gradlew build && ls -lahtr build/libs && cp $(ls -ahtr build/libs/R* | tail -n 1) $BINARIES_FOLDER/Roddy/dist/bin/current/lib/RoddyToolLib.jar
 	
 RUN cd $RODDY_PLUGINS_R2_4 && git clone https://github.com/eilslabs/COWorkflowsBasePlugin COWorkflowsBasePlugin_1.0.0 && \
 	cd COWorkflowsBasePlugin_1.0.0 && git checkout 1.0.0
