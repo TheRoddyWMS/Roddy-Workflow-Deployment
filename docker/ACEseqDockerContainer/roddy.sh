@@ -27,7 +27,7 @@ inputBamCtrlLcl=`readlink -f "${5}"`
 inputBamTumorLcl=`readlink -f "${6}"`
 inputBamCtrlSampleName=${7}
 inputBamTumorSampleName=${8}
-referenceFilesPath=`dirname "${9}"`
+referenceFilesPath=`readlink -f "${9}"`
 workspaceLcl=`readlink -f "${10}"`
 
 function checkFile() {
