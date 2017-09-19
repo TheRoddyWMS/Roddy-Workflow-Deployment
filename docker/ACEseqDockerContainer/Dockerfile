@@ -63,8 +63,8 @@ RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 # Install ACEseq, so we can install the Conda environment, the only reason, why it is before the other installation commands is, that the process 
 # takes quite long and it is nicer for intermediate builds.
 RUN cd $RODDY_PLUGINS_R2_4 && \
-	git clone https://github.com/eilslabs/ACEseqWorkflow ACEseqWorkflow_1.2.10 && \
-	cd ACEseqWorkflow_1.2.10 &&  \
+	git  clone https://github.com/eilslabs/ACEseqWorkflow ACEseqWorkflow_1.2.10 && \
+	cd ACEseqWorkflow_1.2.10  &&  \
 	git checkout 1.2.10
 	
 RUN	conda env create -n ACEseqWorkflow -f $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml;
