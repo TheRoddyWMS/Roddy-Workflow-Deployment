@@ -1,4 +1,4 @@
-<configuration configurationType='project' name='ACEseq' description='' >
+<configuration configurationType='project' name='ACEseq' imports='sampleNames' description='' >
 
   <availableAnalyses>
     <analysis id="copyNumberEstimation" configuration="copyNumberEstimationAnalysis"

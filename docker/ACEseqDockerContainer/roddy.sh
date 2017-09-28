@@ -12,7 +12,7 @@
 # 11: Output folder
 # 12: Optional: The SV file
 
-if [[ $# -lt 10 ]]; then
+if [[ $# -lt 11 ]]; then
 	echo "Wrong number of arguments"
 	head -n 12 "$0" | tail -n+2
 	exit 1
@@ -82,17 +82,23 @@ referenceGenome="REFERENCE_GENOME:${referenceGenomeFile}"
 referenceGenomePath=`dirname ${referenceGenomeFile}`
 outputBaseDirectory="outputBaseDirectory:${workspace}"
 outputFileGroup="outputFileGroup:roddy"
+sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup}\""
+prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/configs/xml/sampleConfigTemplate.txt /home/roddy/additionalConfigs/sampleNames.xml && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' && sed -i  -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/'"
+
+call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup},${sampleListParameters}\""
 
 absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
 #echo $absoluteCall
  
-docker run \
+# Prepare sample names config
+ 
+echo docker run \
 		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
 		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
 		-v ${workspaceLcl}:${workspace} \
 		-v ${referenceGenomePath}:${referenceGenomePath} \
+		-v ${additionalConfig}:/home/roddy/additionalConfigs/sampleNames.xml
 		-v "${referenceFilesPath}:${referenceFilesPath}" \
 		-v "${configurationFolderLcl}:${configurationFolder}" \
 		--rm \
