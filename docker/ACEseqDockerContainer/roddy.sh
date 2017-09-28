@@ -88,17 +88,13 @@ prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/rod
 
 call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup},${sampleListParameters}\""
 
-absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
-#echo $absoluteCall
+absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $prepareAdditionalConfigCall ;$call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
  
-# Prepare sample names config
- 
-echo docker run \
+docker run \
 		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
 		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
 		-v ${workspaceLcl}:${workspace} \
 		-v ${referenceGenomePath}:${referenceGenomePath} \
-		-v ${additionalConfig}:/home/roddy/additionalConfigs/sampleNames.xml
 		-v "${referenceFilesPath}:${referenceFilesPath}" \
 		-v "${configurationFolderLcl}:${configurationFolder}" \
 		--rm \
@@ -106,5 +102,3 @@ echo docker run \
 		-t -i aceseqimage \
 		/bin/bash -c "$absoluteCall"
 
-
-#'[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 60; done; echo \"done\";'"
