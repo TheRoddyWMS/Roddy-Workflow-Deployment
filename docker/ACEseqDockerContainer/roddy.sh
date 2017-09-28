@@ -87,7 +87,7 @@ sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName
 sampleXML=/home/roddy/additionalConfigs/sampleNames.xml
 prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/config/xml/sampleConfigTemplate.txt $sampleXML && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' $sampleXML && sed -i  -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/' $sampleXML "
 
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup},${sampleListParameters}\""
+call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup}\""
 
 absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $prepareAdditionalConfigCall ;$call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
  
