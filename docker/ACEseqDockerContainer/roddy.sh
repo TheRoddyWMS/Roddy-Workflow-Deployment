@@ -84,7 +84,8 @@ outputBaseDirectory="outputBaseDirectory:${workspace}"
 outputFileGroup="outputFileGroup:roddy"
 sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 
-prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/configs/xml/sampleConfigTemplate.txt /home/roddy/additionalConfigs/sampleNames.xml && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' && sed -i  -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/'"
+sampleXML=/home/roddy/additionalConfigs/sampleNames.xml
+prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/config/xml/sampleConfigTemplate.txt $sampleXML && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' $sampleXML && sed -i  -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/' $sampleXML "
 
 call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup},${sampleListParameters}\""
 
