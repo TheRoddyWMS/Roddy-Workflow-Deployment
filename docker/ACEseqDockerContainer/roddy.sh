@@ -57,9 +57,10 @@ checkDir $workspaceLcl rw
 
 if [[ $# -eq 12 ]]; then
 	# Either use the file
-	local svFile=`readlink -f ${12}`
+	svFile=`readlink -f ${12}`
 	checkFile $svFile
 	svBlock="svFile:${svFile}"
+	svFileMount="-v ${svFile}:${svFile}:ro"
 else 
 	# or explicitely disable it.
 	svBlock="runWithSv:false,SV:no"
@@ -98,6 +99,7 @@ docker run \
 		-v ${referenceGenomePath}:${referenceGenomePath} \
 		-v "${referenceFilesPath}:${referenceFilesPath}" \
 		-v "${configurationFolderLcl}:${configurationFolder}" \
+		${svFileMount} \
 		--rm \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 		-t -i aceseqimage \
