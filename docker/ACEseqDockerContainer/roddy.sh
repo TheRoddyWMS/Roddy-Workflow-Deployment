@@ -101,6 +101,7 @@ docker run \
 		-v "${configurationFolderLcl}:${configurationFolder}:ro" \
 		${svFileMount} \
 		--rm \
+		--shm-size=1G \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 		-t -i aceseqimage \
 		/bin/bash -c "$absoluteCall"
