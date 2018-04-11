@@ -93,10 +93,10 @@ call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${p
 absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $prepareAdditionalConfigCall ;$call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
  
 docker run \
-		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
-		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
-		-v ${workspaceLcl}:${workspace} \
-		-v ${referenceGenomePath}:${referenceGenomePath} \
+		-v "${inputBamCtrlLcl}:${inputBamCtrl}" -v "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai" \
+		-v "${inputBamTumorLcl}:${inputBamTumor}" -v "${inputBamTumorLcl}.bai:${inputBamTumor}.bai" \
+		-v "${workspaceLcl}:${workspace}" \
+		-v "${referenceGenomePath}:${referenceGenomePath}" \
 		-v "${referenceFilesPath}:${referenceFilesPath}" \
 		-v "${configurationFolderLcl}:${configurationFolder}" \
 		${svFileMount} \
