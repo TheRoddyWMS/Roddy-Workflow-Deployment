@@ -57,9 +57,10 @@ checkDir $workspaceLcl rw
 
 if [[ $# -eq 12 ]]; then
 	# Either use the file
-	local svFile=`readlink -f ${12}`
+	svFile=`readlink -f ${12}`
 	checkFile $svFile
 	svBlock="svFile:${svFile}"
+	svFileMount="-v ${svFile}:${svFile}:ro"
 else 
 	# or explicitely disable it.
 	svBlock="runWithSv:false,SV:no"
@@ -92,13 +93,15 @@ call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${p
 absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $prepareAdditionalConfigCall ;$call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
  
 docker run \
-		-v ${inputBamCtrlLcl}:${inputBamCtrl} -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai \
-		-v ${inputBamTumorLcl}:${inputBamTumor} -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai \
-		-v ${workspaceLcl}:${workspace} \
-		-v ${referenceGenomePath}:${referenceGenomePath} \
-		-v "${referenceFilesPath}:${referenceFilesPath}" \
-		-v "${configurationFolderLcl}:${configurationFolder}" \
+		-v "${inputBamCtrlLcl}:${inputBamCtrl}:ro" -v "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro" \
+		-v "${inputBamTumorLcl}:${inputBamTumor}:ro" -v "${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro" \
+		-v "${workspaceLcl}:${workspace}" \
+		-v "${referenceGenomePath}:${referenceGenomePath}:ro" \
+		-v "${referenceFilesPath}:${referenceFilesPath}:ro" \
+		-v "${configurationFolderLcl}:${configurationFolder}:ro" \
+		${svFileMount} \
 		--rm \
+		--shm-size=1G \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
 		-t -i aceseqimage \
 		/bin/bash -c "$absoluteCall"

@@ -23,12 +23,10 @@
 -->
   </configurationvalues>
 
-<!--Adjust this to the filename of your SV bedpe with SV points
       <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly"
-                  selectiontag="dellyFileTag"
-                  pattern='${svOutputDirectory}/${pid}_svs.bedpe'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv"
+                  selectiontag="svFileTag"
+                  pattern='${svFile}'/>
       </filenames>
--->
 
 </configuration>
