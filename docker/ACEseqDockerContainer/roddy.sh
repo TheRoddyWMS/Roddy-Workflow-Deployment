@@ -14,7 +14,7 @@
 
 if [[ $# -lt 11 ]]; then
 	echo "Wrong number of arguments"
-	head -n 12 "$0" | tail -n+2
+	head -n 13 "$0" | tail -n+2
 	exit 1
 fi
 
