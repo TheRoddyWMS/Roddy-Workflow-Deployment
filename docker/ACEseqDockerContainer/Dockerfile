@@ -55,7 +55,7 @@ RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 	git submodule update --init --recursive && \
 	cd $RODDY_BASE_PLUGINS &&  \
 	ls -l && \
-	(cd DefaultPlugin && git checkout 1.2.0) && \
+	(cd DefaultPlugin && git checkout 951fc80) && \
 	(cd PluginBase && git checkout 1.2.0) && \
 	cp -r DefaultPlugin DefaultPlugin_1.2.0 &&  \
 	cp -r PluginBase PluginBase_1.2.0
