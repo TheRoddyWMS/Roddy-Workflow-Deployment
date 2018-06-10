@@ -1,0 +1,31 @@
+<configuration configurationType='project' name='Mpileup' imports='sampleNames' description='' >
+
+  <availableAnalyses>
+    <analysis id="SNVCallingWorkflow" configuration="snvCallingAnalysis"
+              useplugin="SNVCallingWorkflow:1.2.166-1"/>
+  </availableAnalyses>
+
+  <configurationvalues>
+    <cvalue name="workflowEnvironmentScript" value="workflowEnvironment_conda" type="string"/>
+    <cvalue name="condaEnvironmentName" value="SNVCallingWorkflow" type="string"
+                description="Name of the Conda environment on the execution hosts. Used by the environment setup script in resources/analysisTools/snvPipeline/enviroments."/>
+
+    <cvalue name='sharedFilesBaseDirectory' value='${hg19DatabasesDirectory}' type='path'/>
+    <cvalue name='assembliesHG191000GenomesDirectory' value='${hg19DatabasesDirectory}' type='path'/>
+    <cvalue name='hg19DatabaseUCSCDirectory' value='${hg19DatabasesDirectory}/UCSC' type='path'/>
+    <cvalue name='CHROMOSOME_LENGTH_FILE' value='${hg19DatabasesDirectory}/stats/hg19_chrTotalLength.tsv' type='path'/>
+    <cvalue name='disableAutoBAMHeaderAnalysis' value='true' type='string'/>
+
+    <cvalue name='inputBaseDirectory' value='pathToPidStructure/' type='path'/>
+    <cvalue name='outputBaseDirectory'  value='pathToPidStructure/' type='path'/>
+    <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
+
+    <cvalue name='outputAllowAccessRightsModification' value='false' type="boolean"/>
+
+  </configurationvalues>
+
+    <processingTools>
+      <tool name="workflowEnvironment_conda" value="conda.sh" basepath="snvPipeline/environments"/>
+    </processingTools>
+
+</configuration>
