@@ -1,0 +1,35 @@
+<configuration configurationType='project' name='Platypus' imports='sampleNames' description='' >
+
+  <availableAnalyses>
+    <analysis id="IndelCallingWorkflow" configuration="indelCallingAnalysis"
+              useplugin="IndelCallingWorkflow:1.2.177-2"/>
+  </availableAnalyses>
+
+  <configurationvalues>
+   <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA}" type="string"/>
+   <cvalue name="condaEnvironmentName" value="IndelCallingWorkflow" type="string"
+                description="Name of the Conda environment on the execution hosts. Used by the environment setup script in resources/analysisTools/indelCallingWorkflow/enviroments."/>
+
+    <cvalue name='disableAutoBAMHeaderAnalysis' value='true' type='boolean'/>
+    <cvalue name='REFERENCE_GENOME' value='${hg19DatabasesDirectory}/sequence/1KGRef/hs37d5.fa' type='path'/>
+    <cvalue name='CHROM_SIZES_FILE' value='${hg19DatabasesDirectory}/stats/hg19_1-22_X_Y_M.fa.chrLenOnlyACGT.tab' type='path'/>
+    <cvalue name='sharedFilesBaseDirectory' value='${hg19DatabasesDirectory}' type='path'/>
+    <cvalue name='assembliesHG191000GenomesDirectory' value='${hg19DatabasesDirectory}' type='path'/>
+    <cvalue name='hg19DatabaseUCSCDirectory' value='${hg19DatabasesDirectory}/UCSC' type='path'/>
+    <cvalue name="LOCAL_CONTROL_COMMON_SNV" value='${hg19DatabasesDirectory}/LocalControls/LocalControlConsolidated_AF.INFO.ACgt10.vcf.gz' type='path'/>
+    <cvalue name='LOCAL_CONTROL_COMMON_SNV_2' value='${hg19DatabasesDirectory}/LocalControls/unused.vcf.gz' type='path'/>
+
+    <cvalue name='inputBaseDirectory' value='pathToPidStructure/' type='path'/>
+    <cvalue name='outputBaseDirectory'  value='pathToPidStructure/' type='path'/>
+    <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
+    <cvalue name='mpileupPlatypusOutputDirectory' value='platypus' type='path'/>
+
+    <cvalue name='outputAllowAccessRightsModification' value='false' type="boolean"/>
+
+  </configurationvalues>
+
+    <processingTools>
+      <tool name="workflowEnvironment_conda" value="conda.sh" basepath="indelCallingWorkflow/environments"/>
+    </processingTools>
+
+</configuration>

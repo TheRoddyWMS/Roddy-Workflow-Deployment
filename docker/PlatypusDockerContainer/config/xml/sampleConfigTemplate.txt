@@ -1,0 +1,8 @@
+<configuration configurationType='project' name='sampleNames' description='' >
+
+  <configurationvalues>
+	<cvalue name='possibleControlSampleNamePrefixes' value='( CONTROL_SAMPLE )' type="bashArray"/>
+	<cvalue name='possibleTumorSampleNamePrefixes' value='( TUMOR_SAMPLE )' type="bashArray"/>
+  </configurationvalues>
+
+</configuration>
