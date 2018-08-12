@@ -73,9 +73,9 @@ referenceGenomePath=`dirname ${referenceGenomeFile}`
 outputBaseDirectory="outputBaseDirectory:${workspace}"
 outputFileGroup="outputFileGroup:roddy"
 
-call="${roddyBinary} ${mode} Platypus@IndelCallingWorkflow ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${sampleList},${sampleListParameters},${tumorSample},${referenceGenome},${hg19DatabasesDirectory},${outputBaseDirectory},${outputFileGroup}\""
+call="${roddyBinary} ${mode} Platypus@IndelCallingWorkflow ${pid} ${roddyConfig} --cvalues='${bamFiles},${sampleList},${sampleListParameters},${tumorSample},${referenceGenome},${hg19DatabasesDirectory},${outputBaseDirectory},${outputFileGroup}'"
 
-absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
+mkdir -p "${workspace}/${pid}"
 
 if [ "$container" = "docker" ]; then
 	docker run \
@@ -89,7 +89,7 @@ if [ "$container" = "docker" ]; then
 		--shm-size=1G \
 		--user $(id -u):$(id -g) \
 		-t -i platypusimage \
-		/bin/bash -c "$absoluteCall"
+		/bin/bash -c "$call"
 else
 	singularity exec \
 		-B /tmp:/tmp \
@@ -101,6 +101,6 @@ else
 		-B "${configurationFolderLcl}:${configurationFolder}:ro" \
 		--containall --net \
 		$(dirname "$0")/singularity.img \
-		/ENTRYPOINT.sh /bin/bash -c "$absoluteCall"
+		/ENTRYPOINT.sh /bin/bash -c "$call"
 fi
 

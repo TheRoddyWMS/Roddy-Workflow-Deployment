@@ -52,6 +52,12 @@ ln -s "$TEMP_FILES/.roddy" /home/roddy/.roddy
 # run roddy command passed to docker container as argument
 export HOME=/home/roddy
 "$@"
+echo "Wait for Roddy to finish"
+while [[ 2 -lt $(qstat | wc -l ) ]]; do
+	echo $(expr $(qstat | wc -l) - 2 )" jobs are still in the list"
+	sleep 120
+done
+echo "done"
 
 # cleanup
 /etc/init.d/gridengine-exec stop
