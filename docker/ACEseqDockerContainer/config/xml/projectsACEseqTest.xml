@@ -1,4 +1,4 @@
-<configuration configurationType='project' name='ACEseq' imports='sampleNames' description='' >
+<configuration configurationType='project' name='ACEseq' description='' >
 
   <availableAnalyses>
     <analysis id="copyNumberEstimation" configuration="copyNumberEstimationAnalysis"
@@ -7,12 +7,13 @@
 
   <configurationvalues>
    <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA}" type="string"/>
-   <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
+   <cvalue name="condaEnvironmentName" value="/home/roddy/.conda/envs/ACEseqWorkflow" type="string"
                 description="Name of the Conda environment on the execution hosts. Used by the environment setup script in resources/analysisTools/copyNumberEstimation/enviroments."/>
 
     <cvalue name='inputBaseDirectory' value='pathToPidStructure/' type='path'/>
     <cvalue name='outputBaseDirectory'  value='pathToPidStructure/' type='path'/>
     <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}' type='path'/>
+    <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq' type="path"/>
 
     <cvalue name='outputAllowAccessRightsModification' value='false' type="boolean"/>
 
@@ -28,5 +29,6 @@
                   selectiontag="svFileTag"
                   pattern='${svFile}'/>
       </filenames>
+
 
 </configuration>

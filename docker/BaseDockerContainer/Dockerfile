@@ -38,18 +38,18 @@ RUN	[ "/bin/bash" , "-c" , "ls -l $binaries; source /home/roddy/binaries/gridEng
 
 # Create all kinds of directories for Roddy and projects
 # Add the Roddy user and bash things
-RUN mkdir -p /workspace/output && \
-    mkdir -p /workspace/input && \
+RUN mkdir -p /home/roddy/workspace && \
     mkdir -p /home/roddy/.roddy/runtimeDevel && \
     mkdir -p /home/roddy/binaries && \
     mkdir -p /data/roddyScratch && \
     mkdir -p /icgc/ngs_share && \
     useradd roddy -d /home/roddy && \
-    chown -R roddy:roddy /workspace && \
+    chown -R roddy:roddy /home/roddy/workspace && \
     chown -R roddy:roddy /home/roddy && \
     chown -R roddy:roddy /data/roddyScratch && \
     chown -R roddy:roddy /icgc && \
     chmod -R 777 /data/roddyScratch && \
+    chmod 777 /home/roddy /dev/stdout /dev/stderr && \
     adduser roddy sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
@@ -76,10 +76,13 @@ USER root
 
 RUN chmod 777 /ENTRYPOINT.sh
 
+# Singularity requires images to be read-only.
+# => Move all writable directories aside.
+# At runtime we mount a scratch dir from the host and copy these directories there.
+# Using a symlink we point to the new location in the scratch dir.
+RUN mv /var/spool/gridengine /var/spool/gridengine.template
+
 USER roddy
 
 ENTRYPOINT ["/ENTRYPOINT.sh"]
 
-#USER roddy
-#RUN sudo bash -c "echo '127.0.0.1 master' | cat - /etc/hosts > /tmp/tmp_host && cp /tmp/tmp_host /etc/hosts"; \
-#    cat /etc/hosts; 

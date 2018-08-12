@@ -61,7 +61,7 @@ dependencies:
 - pyqt=4.11.4=py27_2
 - pysam=0.7.7=0
 - python=2.7.9=3
-- python-dateutil=2.3=py27_0
+- python-dateutil=2.7.3=py_0
 - pytz=2017.3=py_2
 - qt=4.8.7=2
 - r=3.3.2=r3.3.2_0

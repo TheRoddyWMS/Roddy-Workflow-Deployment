@@ -1,6 +1,6 @@
 #!/bin/bash
 # 1: Run mode, which might be "run" or "testrun"
-# 2: Configuration identifier, normally "Platypus"
+# 2: Container type, "docker" or "singularity"
 # 3: Configuration directory
 # 4: Dataset identifier / PID
 # 5: Control bam file
@@ -19,7 +19,7 @@ fi
 
 ## Read in parameters and check files and folders
 mode=${1}
-configurationIdentifier=${2}
+container=${2}
 configurationFolderLcl=`readlink -f "${3}"`
 pid=${4}
 
@@ -48,6 +48,7 @@ function checkDir() {
 }
 
 [[ $mode -ne "run" && $mode -ne "testrun" ]] && echo "Mode must be run or testrun" && exit 2
+[ "$container" != "docker" -a "$container" != "singularity" ] && echo "Container must be docker or singularity" && exit 2
 checkFile $inputBamCtrlLcl 
 checkFile $inputBamTumorLcl 
 checkDir $referenceFilesPath 
@@ -64,31 +65,42 @@ roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
 roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
+sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
 hg19DatabasesDirectory="hg19DatabasesDirectory:${referenceFilesPath}"
 referenceGenome="REFERENCE_GENOME:${referenceGenomeFile}"
 referenceGenomePath=`dirname ${referenceGenomeFile}`
 outputBaseDirectory="outputBaseDirectory:${workspace}"
 outputFileGroup="outputFileGroup:roddy"
-sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 
-sampleXML=/home/roddy/additionalConfigs/sampleNames.xml
-prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/config/xml/sampleConfigTemplate.txt $sampleXML && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' $sampleXML && sed -i -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/' $sampleXML "
+call="${roddyBinary} ${mode} Platypus@IndelCallingWorkflow ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${sampleList},${sampleListParameters},${tumorSample},${referenceGenome},${hg19DatabasesDirectory},${outputBaseDirectory},${outputFileGroup}\""
 
-call="${roddyBinary} ${mode} ${configurationIdentifier}@IndelCallingWorkflow ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${sampleList},${tumorSample},${referenceGenome},${hg19DatabasesDirectory},${outputBaseDirectory},${outputFileGroup}\""
+absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
 
-absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $prepareAdditionalConfigCall ;$call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
-
-docker run \
-		-v ${inputBamCtrlLcl}:${inputBamCtrl}:ro -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro \
-		-v ${inputBamTumorLcl}:${inputBamTumor}:ro -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro \
-		-v ${workspaceLcl}:${workspace} \
-		-v ${referenceGenomePath}:${referenceGenomePath}:ro \
-		-v "${referenceFilesPath}:${referenceFilesPath}":ro \
-		-v "${configurationFolderLcl}:${configurationFolder}":ro \
+if [ "$container" = "docker" ]; then
+	docker run \
+		-v "${inputBamCtrlLcl}:${inputBamCtrl}:ro" -v "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro" \
+		-v "${inputBamTumorLcl}:${inputBamTumor}:ro" -v "${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro" \
+		-v "${workspaceLcl}:${workspace}" \
+		-v "${referenceGenomePath}:${referenceGenomePath}:ro" \
+		-v "${referenceFilesPath}:${referenceFilesPath}:ro" \
+		-v "${configurationFolderLcl}:${configurationFolder}:ro" \
 		--rm \
 		--shm-size=1G \
-		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
+		--user $(id -u):$(id -g) \
 		-t -i platypusimage \
 		/bin/bash -c "$absoluteCall"
+else
+	singularity exec \
+		-B /tmp:/tmp \
+		-B "${inputBamCtrlLcl}:${inputBamCtrl}:ro" -B "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro" \
+		-B "${inputBamTumorLcl}:${inputBamTumor}:ro" -B "${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro" \
+		-B "${workspaceLcl}:${workspace}" \
+		-B "${referenceGenomePath}:${referenceGenomePath}:ro" \
+		-B "${referenceFilesPath}:${referenceFilesPath}:ro" \
+		-B "${configurationFolderLcl}:${configurationFolder}:ro" \
+		--containall --net \
+		$(dirname "$0")/singularity.img \
+		/ENTRYPOINT.sh /bin/bash -c "$absoluteCall"
+fi
 

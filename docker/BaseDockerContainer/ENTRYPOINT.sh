@@ -1,50 +1,60 @@
 #!/bin/bash
 
-[[ -f /home/roddy/debugStuff.sh ]] && bash /home/roddy/debugStuff.sh
+# SGE looks up the UID and GID of the user running SGE in /etc/passwd and /etc/group
+# update the IDs to match the user running the docker/singularity container
+if [ $(id -g) -ne 0 ]; then
+	NEW_GROUP=$(sed -e "s|^roddy:.*|roddy:x:$(id -g):|" /etc/group)
+	rm -f /etc/group 2> /dev/null
+	echo "$NEW_GROUP" > /etc/group
+fi
+if [ $(id -u) -ne 0 ]; then
+	NEW_PASSWD=$(sed -e "s|^roddy:.*|roddy:x:$(id -u):$(id -g)::/home/roddy:/bin/sh|" /etc/passwd)
+	rm -f /etc/passwd 2> /dev/null
+	echo "$NEW_PASSWD" > /etc/passwd
+fi
 
-export HOSTNAME=`hostname`
-export HOST=$HOSTNAME
+# update the host name to match the containers name
+export HOSTNAME=$(hostname)
+if ! grep -q $HOSTNAME /etc/hostname; then
+	rm -f /etc/hostname
+	echo "$HOSTNAME" > /etc/hostname
+fi
+if ! grep -q $HOSTNAME /etc/hosts; then
+	rm -f /etc/hosts
+	echo "127.0.0.1 $HOSTNAME ${HOSTNAME%%.*}" > /etc/hosts
+fi
+echo "$HOSTNAME" > /var/lib/gridengine/default/common/act_qmaster
 
+# make a directory for temp files
+TEMP_FILES=$(mktemp -d)
 
-(ps -ef  | grep usr  | grep  sge | awk '{print $2}' | xargs sudo kill 2> /dev/null)
+# move spool directory of qmaster to a writable location (required for singularity)
+cp -r /var/spool/gridengine.template "$TEMP_FILES/gridengine"
+ln -s "$TEMP_FILES/gridengine" /var/spool/gridengine
 
-# Prepare SGE so it will start properly
-sudo bash -c "hostname > /var/lib/gridengine/default/common/act_qmaster"
-sudo rm -rf /var/lib/gridengine/default/common/act_qmaster
+# launch qmaster
+/etc/init.d/gridengine-master start
+sleep 10
 
-sudo /etc/init.d/gridengine-exec stop
-sudo /etc/init.d/gridengine-master restart;
-sudo /etc/init.d/gridengine-exec start;
+# add container to SGE queue
+qconf -ah $HOSTNAME
+qconf -as $HOSTNAME
+qconf -mattr queue hostlist "$HOSTNAME @allhosts" main.q
+qconf -mattr queue slots "1,[$HOSTNAME=8]" main.q
 
-# Prepare the host and the queue, without it, it won't run
-host=`hostname`
-sudo qconf -ah $host
-sudo qconf -as $host
+# launch execution daemon
+/etc/init.d/gridengine-exec start
 
+# move .roddy directory to a writable location (required for singularity)
+cp -r /home/roddy/.roddy.template "$TEMP_FILES/.roddy"
+ln -s "$TEMP_FILES/.roddy" /home/roddy/.roddy
 
-echo "host=`hostname`" > /home/roddy/prepareMainQ.sh; 
-echo "touch /home/roddy/main.q && chmod a+rw /home/roddy/main.q" >> /home/roddy/prepareMainQ.sh
-echo 'qconf -sq main.q | sed "s/hostlist.*/hostlist\t\t${host} @allhosts/g" | sed "s/slots.*/slots\t\t1,[${host}=8]/g" > /home/roddy/main.q' >> /home/roddy/prepareMainQ.sh; 
-sudo /bin/bash /home/roddy/prepareMainQ.sh
+# run roddy command passed to docker container as argument
+export HOME=/home/roddy
+"$@"
 
-ls -l /home/roddy/
-cat /home/roddy/main.q
+# cleanup
+/etc/init.d/gridengine-exec stop
+/etc/init.d/gridengine-master stop
+rm -rf "$TEMP_FILES"
 
-qconf -Mq /home/roddy/main.q
-
-echo "sleep 1" | qsub
-
-sleep 2
-
-qstat
-
-
-# change UID and GID of roddy user to user who launched the docker
-[ -n "$RUN_AS_UID" ] && sudo usermod -u $RUN_AS_UID roddy
-[ -n "$RUN_AS_GID" ] && sudo groupmod -g $RUN_AS_GID roddy
-
-# give normal users permissions on std* (required with gosu)
-sudo chmod 666 /dev/std{err,out,in}
-
-# run workfow as roddy user with gosu
-gosu roddy "$@"

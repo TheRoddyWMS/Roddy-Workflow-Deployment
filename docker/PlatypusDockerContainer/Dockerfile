@@ -42,8 +42,6 @@ ENV RODDY_BASE_PLUGINS $BINARIES_FOLDER/Roddy/dist/plugins
 
 ENV INDEL_CALLING_FOLDER $RODDY_PLUGINS_R2_4/IndelCallingWorkflow_1.2.177-2
 
-ENV COWORKFLOWS_FOLDER $RODDY_PLUGINS_R2_4/COWorkflowsBasePlugins
-
 # Prepare the Roddy setup, also prepare Default and Base plugin
 RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 	rm -rf $BINARIES_FOLDER/Roddy &&  \
@@ -69,10 +67,12 @@ RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
 	wget $groovyZipLink && \
 	unzip $groovyArchive && \
 	rm $groovyArchive && \
-	ln -sf /usr/lib/jvm/java-8-openjdk-amd64 ~/.roddy/runtimeDevel/jdk && ln -sf ~/.roddy/runtimeDevel/jdk ~/.roddy/runtimeDevel/jdk1.8.0_131
+	ln -sf /usr/lib/jvm/java-8-openjdk-amd64 ~/.roddy/runtimeDevel/jdk && ln -sf ~/.roddy/runtimeDevel/jdk ~/.roddy/runtimeDevel/jdk1.8.0_131 && \
+	mv ~/.roddy ~/.roddy.template # required for Singularity (will be copied to writable dir and symlinked)
 
 RUN cd $RODDY_PLUGINS_R2_4 && git clone https://github.com/eilslabs/COWorkflowsBasePlugin COWorkflowsBasePlugin_1.0.0 && \
-	cd COWorkflowsBasePlugin_1.0.0 && git checkout 8c8a190
+    cd COWorkflowsBasePlugin_1.0.0 && git checkout 8c8a190 && \
+    rm -f COWorkflowsBasePlugin.jar # must use COWorkflows.jar instead
 
 # Install the indel calling workflow
 # the workflow needs to be imported to a temporary location first
@@ -89,7 +89,7 @@ RUN CONDA_BRANCH=e794e08 && \
     cd $INDEL_CALLING_FOLDER/resources/analysisTools/indelCallingWorkflow/environments && \
     git show $CONDA_BRANCH:./conda.sh > conda.sh && chmod a+x conda.sh && \
     git show $CONDA_BRANCH:./conda.yml > conda.yml && \
-    sed -i -e 's/r-purrr=.*/r-purrr=0.2.4/' conda.yml && \
+    sed -i -e 's/r-purrr=.*/r-purrr=0.2.4=r341h470a237_1/' -e 's/python-dateutil=.*/python-dateutil=2.7.3=py_0/' conda.yml && \
     conda env create -n IndelCallingWorkflow -f conda.yml
 
 RUN conda install -n IndelCallingWorkflow -y pypy2.7=5.10.0=0 perl-string-util=1.26=pl5.22.0_0 perl-number-misc=1.2=pl5.22.0_0 perl-test-toolbox=0.4=pl5.22.0_0
