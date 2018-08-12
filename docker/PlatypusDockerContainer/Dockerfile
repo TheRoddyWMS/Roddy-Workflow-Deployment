@@ -94,5 +94,8 @@ RUN CONDA_BRANCH=e794e08 && \
 
 RUN conda install -n IndelCallingWorkflow -y pypy2.7=5.10.0=0 perl-string-util=1.26=pl5.22.0_0 perl-number-misc=1.2=pl5.22.0_0 perl-test-toolbox=0.4=pl5.22.0_0
 
+# copy workflow config
+COPY config /home/roddy/config
+
 # import matplotlib once to build the font cache (fails inside a gridengine job, so we do it here)
 RUN bash -c "source activate IndelCallingWorkflow && python -c import\\ matplotlib.pyplot"

@@ -1,36 +1,34 @@
 #!/bin/bash
 # 1: Run mode, which might be "run" or "testrun"
 # 2: Container type, "docker" or "singularity"
-# 3: Configuration directory
-# 4: Dataset identifier / PID
-# 5: Control bam file
-# 6: Tumor bam file
-# 7: Control bam sample name
-# 8: Tumor bam sample name
-# 9: Reference genome file
-# 10: Reference files path
-# 11: Output folder
-# 12: Optional: The SV file
+# 3: Dataset identifier / PID
+# 4: Control bam file
+# 5: Tumor bam file
+# 6: Control bam sample name
+# 7: Tumor bam sample name
+# 8: Reference genome file
+# 9: Reference files path
+# 10: Output folder
+# 11: Optional: The SV file
 
-if [[ $# -lt 11 ]]; then
+if [[ $# -lt 10 ]]; then
 	echo "Wrong number of arguments"
-	head -n 13 "$0" | tail -n+2
+	head -n 12 "$0" | tail -n+2
 	exit 1
 fi
 
 ## Read in parameters and check files and folders
 mode=${1}
 container=${2}
-configurationFolder=`readlink -f "${3}"`
-pid=${4}
+pid=${3}
 
-inputBamCtrl=`readlink -f "${5}"`
-inputBamTumor=`readlink -f "${6}"`
-inputBamCtrlSampleName=${7}
-inputBamTumorSampleName=${8}
-referenceGenomeFile=`readlink -f "${9}"`
-referenceFilesPath=`readlink -f "${10}"`
-workspace=`readlink -f "${11}"`
+inputBamCtrl=`readlink -f "${4}"`
+inputBamTumor=`readlink -f "${5}"`
+inputBamCtrlSampleName=${6}
+inputBamTumorSampleName=${7}
+referenceGenomeFile=`readlink -f "${8}"`
+referenceFilesPath=`readlink -f "${9}"`
+workspace=`readlink -f "${10}"`
 
 function checkFile() {
 	local _file=${1}
@@ -59,7 +57,7 @@ checkDir $workspace rw
 
 if [[ $# -eq 13 ]]; then
 	# Either use the file
-	svFile=`readlink -f ${12}`
+	svFile=`readlink -f ${11}`
 	checkFile $svFile
 	svBlock="svFile:${svFile}"
 else 
@@ -69,7 +67,7 @@ fi
 
 # Define in-Docker files and folders
 roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
-roddyConfig="--useconfig=${configurationFolder}/ini/alllocal.ini"
+roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
@@ -90,7 +88,6 @@ if [ "$container" = "docker" ]; then
 		-v "${workspace}:${workspace}" \
 		-v "${referenceGenomeFile}:${referenceGenomeFile}:ro" -v "${referenceGenomeFile}.fai:${referenceGenomeFile}.fai:ro" \
 		-v "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		-v "${configurationFolder}:${configurationFolder}:ro" \
 		$([ -n "${svFile}" ] && echo -v "${svFile}:${svFile}:ro") \
 		--rm \
 		--shm-size=1G \
@@ -105,7 +102,6 @@ else
 		-B "${workspace}:${workspace}" \
 		-B "${referenceGenomeFile}:${referenceGenomeFile}:ro" -B "${referenceGenomeFile}.fai:${referenceGenomeFile}.fai:ro" \
 		-B "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		-B "${configurationFolder}:${configurationFolder}:ro" \
 		$([ -n "${svFile}" ] && echo -B "${svFile}:${svFile}:ro") \
 		--containall --net \
 		$(dirname "$0")/singularity.img \

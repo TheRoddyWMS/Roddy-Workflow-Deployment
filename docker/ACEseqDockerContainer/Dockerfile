@@ -100,3 +100,5 @@ RUN cd $RODDY_PLUGINS_R2_4 && git clone https://github.com/eilslabs/COWorkflowsB
 ## HINT: 				 ~/binaries/Roddy/roddy.sh run coWorkflowsTestProject@aceseq stds --c=/home/roddy/config/ini/alllocal.ini
 ## HINT: Run the container with: docker run -v /home/heinold/.roddy/runtimeDevel/:/home/roddy/.roddy/runtimeDevel -v /home/heinold/temp:/home/roddy/temp -v `readlink -f config`:/home/roddy/config  -t -i aceseqimage /bin/bash
 
+# copy workflow config
+COPY config /home/roddy/config
