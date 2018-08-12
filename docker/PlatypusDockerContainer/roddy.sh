@@ -82,7 +82,7 @@ if [ "$container" = "docker" ]; then
 		--rm \
 		--shm-size=1G \
 		--user $(id -u):$(id -g) \
-		-t -i platypusimage \
+		platypusimage \
 		/bin/bash -c "$call"
 else
 	singularity exec \
