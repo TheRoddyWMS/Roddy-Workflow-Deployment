@@ -21,16 +21,16 @@ fi
 ## Read in parameters and check files and folders
 mode=${1}
 container=${2}
-configurationFolderLcl=`readlink -f "${3}"`
+configurationFolder=`readlink -f "${3}"`
 pid=${4}
 
-inputBamCtrlLcl=`readlink -f "${5}"`
-inputBamTumorLcl=`readlink -f "${6}"`
+inputBamCtrl=`readlink -f "${5}"`
+inputBamTumor=`readlink -f "${6}"`
 inputBamCtrlSampleName=${7}
 inputBamTumorSampleName=${8}
 referenceGenomeFile=`readlink -f "${9}"`
 referenceFilesPath=`readlink -f "${10}"`
-workspaceLcl=`readlink -f "${11}"`
+workspace=`readlink -f "${11}"`
 
 function checkFile() {
 	local _file=${1}
@@ -50,11 +50,12 @@ function checkDir() {
 
 [[ $mode -ne "run" && $mode -ne "testrun" ]] && echo "Mode must be run or testrun" && exit 2
 [ "$container" != "docker" -a "$container" != "singularity" ] && echo "Container must be docker or singularity" && exit 2
-checkFile $inputBamCtrlLcl 
-checkFile $inputBamTumorLcl 
+checkFile $inputBamCtrl
+checkFile $inputBamTumor
 checkFile ${referenceGenomeFile}
+checkFile ${referenceGenomeFile}.fai
 checkDir $referenceFilesPath 
-checkDir $workspaceLcl rw
+checkDir $workspace rw
 
 if [[ $# -eq 13 ]]; then
 	# Either use the file
@@ -67,21 +68,14 @@ else
 fi
 
 # Define in-Docker files and folders
-
-workspace=/home/roddy/workspace
-configurationFolder=/home/roddy/config
-inputBamCtrl=${inputBamCtrlLcl}
-inputBamTumor=${inputBamTumorLcl}
-
 roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
-roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
+roddyConfig="--useconfig=${configurationFolder}/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
 baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
 referenceGenome="REFERENCE_GENOME:${referenceGenomeFile}"
-referenceGenomePath=`dirname ${referenceGenomeFile}`
 outputBaseDirectory="outputBaseDirectory:${workspace}"
 outputFileGroup="outputFileGroup:roddy"
 
@@ -91,12 +85,12 @@ mkdir -p "${workspace}/${pid}"
 
 if [ "$container" = "docker" ]; then
 	docker run \
-		-v "${inputBamCtrlLcl}:${inputBamCtrl}:ro" -v "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro" \
-		-v "${inputBamTumorLcl}:${inputBamTumor}:ro" -v "${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro" \
-		-v "${workspaceLcl}:${workspace}" \
-		-v "${referenceGenomePath}:${referenceGenomePath}:ro" \
+		-v "${inputBamCtrl}:${inputBamCtrl}:ro" -v "${inputBamCtrl}.bai:${inputBamCtrl}.bai:ro" \
+		-v "${inputBamTumor}:${inputBamTumor}:ro" -v "${inputBamTumor}.bai:${inputBamTumor}.bai:ro" \
+		-v "${workspace}:${workspace}" \
+		-v "${referenceGenomeFile}:${referenceGenomeFile}:ro" -v "${referenceGenomeFile}.fai:${referenceGenomeFile}.fai:ro" \
 		-v "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		-v "${configurationFolderLcl}:${configurationFolder}:ro" \
+		-v "${configurationFolder}:${configurationFolder}:ro" \
 		$([ -n "${svFile}" ] && echo -v "${svFile}:${svFile}:ro") \
 		--rm \
 		--shm-size=1G \
@@ -106,12 +100,12 @@ if [ "$container" = "docker" ]; then
 else
 	singularity exec \
 		-B /tmp:/tmp \
-		-B "${inputBamCtrlLcl}:${inputBamCtrl}:ro" -B "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro" \
-		-B "${inputBamTumorLcl}:${inputBamTumor}:ro" -B "${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro" \
-		-B "${workspaceLcl}:${workspace}" \
-		-B "${referenceGenomePath}:${referenceGenomePath}:ro" \
+		-B "${inputBamCtrl}:${inputBamCtrl}:ro" -B "${inputBamCtrl}.bai:${inputBamCtrl}.bai:ro" \
+		-B "${inputBamTumor}:${inputBamTumor}:ro" -B "${inputBamTumor}.bai:${inputBamTumor}.bai:ro" \
+		-B "${workspace}:${workspace}" \
+		-B "${referenceGenomeFile}:${referenceGenomeFile}:ro" -B "${referenceGenomeFile}.fai:${referenceGenomeFile}.fai:ro" \
 		-B "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		-B "${configurationFolderLcl}:${configurationFolder}:ro" \
+		-B "${configurationFolder}:${configurationFolder}:ro" \
 		$([ -n "${svFile}" ] && echo -B "${svFile}:${svFile}:ro") \
 		--containall --net \
 		$(dirname "$0")/singularity.img \
