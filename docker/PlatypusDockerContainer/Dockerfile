@@ -47,6 +47,7 @@ RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 	rm -rf $BINARIES_FOLDER/Roddy &&  \
 	git clone https://github.com/eilslabs/Roddy.git &&  \
 	cd Roddy &&  git checkout 2.4.10b &&  mkdir -p plugins_R2.4 &&  \
+	chmod 777 dist/runtime && \
 	ls -l && \
 	ls -l .git/ && \
 #	git submodule add -f  https://github.com/eilslabs/Roddy-Base-Plugin.git dist/plugins/PluginBase && \

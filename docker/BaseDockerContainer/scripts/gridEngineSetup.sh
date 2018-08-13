@@ -140,4 +140,5 @@ sleep 4
 pkill -9 sge_execd
 pkill -9 sge_qmaster
 sleep 4
+rm -f /var/spool/gridengine/qmaster/lock
 }
