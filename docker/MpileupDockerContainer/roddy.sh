@@ -9,10 +9,11 @@
 # 8: Reference genome file
 # 9: Reference files path
 # 10: Output folder
+# 11: Number of threads
 
-if [[ $# -ne 10 ]]; then
+if [[ $# -ne 11 ]]; then
 	echo "Wrong number of arguments"
-	head -n 11 "$0" | tail -n+2
+	head -n 12 "$0" | tail -n+2
 	exit 1
 fi
 
@@ -28,6 +29,7 @@ inputBamTumorSampleName=${7}
 referenceGenomeFile=`readlink -f "${8}"`
 referenceFilesPath=`readlink -f "${9}"`
 workspace=`readlink -f "${10}"`
+threads=${11}
 
 function checkFile() {
 	local _file=${1}
@@ -53,6 +55,7 @@ checkFile ${referenceGenomeFile}
 checkFile ${referenceGenomeFile}.fai
 checkDir $referenceFilesPath
 checkDir $workspace rw
+! [[ $threads =~ ^[1-9]|1[0-9]|2[0-4]*$ ]] && echo "Number of threads must be between 1 and 24" && exit 2
 
 # Define in-Docker files and folders
 
@@ -84,9 +87,11 @@ if [ "$container" = "docker" ]; then
 		--rm \
 		--shm-size=1G \
 		--user $(id -u):$(id -g) \
+		--env=THREADS=$threads \
 		mpileupimage \
 		/bin/bash -c "$call"
 else
+	export SINGULARITYENV_THREADS=$threads
 	singularity exec \
 		-B /tmp:/tmp \
 		-B "${inputBamCtrl}:${inputBamCtrl}:ro" -B "${inputBamCtrl}.bai:${inputBamCtrl}.bai:ro" \

@@ -40,7 +40,8 @@ sleep 10
 qconf -ah $HOSTNAME
 qconf -as $HOSTNAME
 qconf -mattr queue hostlist "$HOSTNAME @allhosts" main.q
-qconf -mattr queue slots "1,[$HOSTNAME=8]" main.q
+[ -z "$THREADS" ] && THREADS=8
+qconf -mattr queue slots "1,[$HOSTNAME=$THREADS]" main.q
 
 # launch execution daemon
 /etc/init.d/gridengine-exec start
