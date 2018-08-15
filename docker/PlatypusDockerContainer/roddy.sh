@@ -22,13 +22,13 @@ mode=${1}
 container=${2}
 pid=${3}
 
-inputBamCtrl=`readlink -f "${4}"`
-inputBamTumor=`readlink -f "${5}"`
+inputBamCtrl=`readlink -m "${4}"`
+inputBamTumor=`readlink -m "${5}"`
 inputBamCtrlSampleName=${6}
 inputBamTumorSampleName=${7}
-referenceGenomeFile=`readlink -f "${8}"`
-referenceFilesPath=`readlink -f "${9}"`
-workspace=`readlink -f "${10}"`
+referenceGenomeFile=`readlink -m "${8}"`
+referenceFilesPath=`readlink -m "${9}"`
+workspace=`readlink -m "${10}"`
 threads=${11}
 
 function checkFile() {
