@@ -83,11 +83,10 @@ function installGridEngine() {
     qconf -am roddy
     qconf -au roddy users
     qconf -as $HOST
-	# make SGE-related files writable for everyone to enable running SGE as any user
-	chmod -R a+rw /var/lib/gridengine /var/run/gridengine /var/spool
-	chmod a+rw /etc /etc/passwd /etc/group
 	# define roddy as the user to run SGE (required by Singularity)
 	sed -i -e 's/admin_user.*/admin_user roddy/' /etc/gridengine/bootstrap /var/lib/gridengine/default/common/bootstrap
+	# make SGE-related files readable by everyone so that any user can run SGE
+	chmod -R a+rx /var/spool/gridengine
 }
 
 # some parameters of gridengine can only be modified using an interactive editor

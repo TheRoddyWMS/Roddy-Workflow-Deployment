@@ -70,7 +70,7 @@ RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
 	unzip $groovyArchive && \
 	rm $groovyArchive && \
 	ln -sf /usr/lib/jvm/java-8-openjdk-amd64 ~/.roddy/runtimeDevel/jdk && ln -sf ~/.roddy/runtimeDevel/jdk ~/.roddy/runtimeDevel/jdk1.8.0_131 && \
-	mv ~/.roddy ~/.roddy.template # required for Singularity (will be copied to writable dir and symlinked)
+	mv ~/.roddy ~/writable.template/.roddy && ln -s /home/roddy/writable/.roddy /home/roddy/.roddy # required for Singularity (will be copied to writable dir and symlinked)
 
 RUN cd $BINARIES_FOLDER/Roddy && ./gradlew build && \
     cd dist/bin && ln -sf develop 3.0.7 && ln -sf develop current

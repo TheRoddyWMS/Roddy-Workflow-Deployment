@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# make a writable directory for temp files and link to it (required for Singularity)
+TEMP_FILES=$(mktemp -d)
+cp -r /home/roddy/writable.template "$TEMP_FILES/writable"
+ln -s "$TEMP_FILES/writable" /home/roddy/writable
+
 # SGE looks up the UID and GID of the user running SGE in /etc/passwd and /etc/group
 # update the IDs to match the user running the docker/singularity container
 if [ $(id -g) -ne 0 ]; then
@@ -25,13 +30,6 @@ if ! grep -q $HOSTNAME /etc/hosts; then
 fi
 echo "$HOSTNAME" > /var/lib/gridengine/default/common/act_qmaster
 
-# make a directory for temp files
-TEMP_FILES=$(mktemp -d)
-
-# move spool directory of qmaster to a writable location (required for singularity)
-cp -r /var/spool/gridengine.template "$TEMP_FILES/gridengine"
-ln -s "$TEMP_FILES/gridengine" /var/spool/gridengine
-
 # launch qmaster
 /etc/init.d/gridengine-master start
 sleep 10
@@ -45,10 +43,6 @@ qconf -mattr queue slots "1,[$HOSTNAME=$THREADS]" main.q
 
 # launch execution daemon
 /etc/init.d/gridengine-exec start
-
-# move .roddy directory to a writable location (required for singularity)
-cp -r /home/roddy/.roddy.template "$TEMP_FILES/.roddy"
-ln -s "$TEMP_FILES/.roddy" /home/roddy/.roddy
 
 # run roddy command passed to docker container as argument
 export HOME=/home/roddy

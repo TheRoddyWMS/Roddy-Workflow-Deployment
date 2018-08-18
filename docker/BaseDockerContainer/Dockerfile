@@ -80,7 +80,18 @@ RUN chmod 777 /ENTRYPOINT.sh
 # => Move all writable directories aside.
 # At runtime we mount a scratch dir from the host and copy these directories there.
 # Using a symlink we point to the new location in the scratch dir.
-RUN mv /var/spool/gridengine /var/spool/gridengine.template
+RUN mkdir /home/roddy/writable.template && chmod a+rwx /home/roddy/writable.template && \
+    mv /var/spool/gridengine /home/roddy/writable.template/var_spool_gridengine && \
+    ln -s /home/roddy/writable/var_spool_gridengine /var/spool/gridengine && \
+    mv /etc/gridengine/bootstrap /home/roddy/writable.template/etc_gridengine_bootstrap && \
+    ln -s /home/roddy/writable/etc_gridengine_bootstrap /etc/gridengine/bootstrap && \
+    mv /var/lib/gridengine/default/common /home/roddy/writable.template/var_lib_gridengine && \
+    ln -s /home/roddy/writable/var_lib_gridengine /var/lib/gridengine/default/common && \
+    mv /var/run/gridengine /home/roddy/writable.template/var_run_gridengine && \
+    ln -s /home/roddy/writable/var_run_gridengine /var/run/gridengine
+
+# passwd and group files need to be updated at runtime to give roddy the same ID as the calling user
+RUN chmod a+rw /etc /etc/passwd /etc/group
 
 USER roddy
 

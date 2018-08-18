@@ -69,7 +69,7 @@ RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
 	unzip $groovyArchive && \
 	rm $groovyArchive && \
 	ln -sf /usr/lib/jvm/java-8-openjdk-amd64 ~/.roddy/runtimeDevel/jdk && ln -sf ~/.roddy/runtimeDevel/jdk ~/.roddy/runtimeDevel/jdk1.8.0_131 && \
-	mv ~/.roddy ~/.roddy.template # required for Singularity (will be copied to writable dir and symlinked)
+	mv ~/.roddy ~/writable.template/.roddy && ln -s /home/roddy/writable/.roddy /home/roddy/.roddy # required for Singularity (will be copied to writable dir and symlinked)
 
 RUN cd $RODDY_PLUGINS_R2_4 && git clone https://github.com/eilslabs/COWorkflowsBasePlugin COWorkflowsBasePlugin_1.0.0 && \
     cd COWorkflowsBasePlugin_1.0.0 && git checkout 8c8a190 && \
@@ -99,4 +99,5 @@ RUN conda install -n IndelCallingWorkflow -y pypy2.7=5.10.0=0 perl-string-util=1
 COPY config /home/roddy/config
 
 # import matplotlib once to build the font cache (fails inside a gridengine job, so we do it here)
-RUN bash -c "source activate IndelCallingWorkflow && python -c import\\ matplotlib.pyplot"
+RUN bash -c "source activate IndelCallingWorkflow && python -c import\\ matplotlib.pyplot" && \
+    mv /home/roddy/.cache /home/roddy/writable.template/.cache && ln -s /home/roddy/writable/.cache /home/roddy/.cache # must be in a writable location for Singularity

@@ -78,7 +78,7 @@ RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
 	unzip $groovyArchive && \
 	rm $groovyArchive && \
 	ln -sf /usr/lib/jvm/java-8-openjdk-amd64 ~/.roddy/runtimeDevel/jdk && ln -sf ~/.roddy/runtimeDevel/jdk ~/.roddy/runtimeDevel/jdk1.8.0_131 && \
-	mv ~/.roddy ~/.roddy.template # required for Singularity (will be copied to writable dir and symlinked)
+	mv ~/.roddy ~/writable.template/.roddy && ln -s /home/roddy/writable/.roddy /home/roddy/.roddy # required for Singularity (will be copied to writable dir and symlinked)
 
 # Currently not needed. Both are packed in R2.4.10
 #RUN cd $BINARIES_FOLDER && \
