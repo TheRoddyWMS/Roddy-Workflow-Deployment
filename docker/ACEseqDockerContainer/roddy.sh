@@ -59,13 +59,13 @@ checkDir $workspace rw
 ! [[ $threads =~ ^[1-9]|1[0-9]|2[0-4]*$ ]] && echo "Number of threads must be between 1 and 24" && exit 2
 
 if [[ $# -eq 12 ]]; then
-	# Either use the file
+	# Either use the provided SV file
 	svFile=`readlink -m ${12}`
 	checkFile $svFile
 	svBlock="svFile:${svFile}"
 else 
-	# or explicitely disable it.
-	svBlock="runWithSv:false,SV:no"
+	# or use an empty SV file to disable it.
+	svBlock="svFile:/home/roddy/empty_sv.tsv"
 fi
 
 # Define in-Docker files and folders

@@ -103,3 +103,7 @@ RUN cd $RODDY_PLUGINS_R2_4 && git clone https://github.com/eilslabs/COWorkflowsB
 
 # copy workflow config
 COPY config /home/roddy/config
+
+# create an empty DELLY SV file, for when the workflow is called without SVs
+RUN echo -e 'chrom1\tstart1\tend1\tchrom2\tstart2\tend2\tid\tpairs\tstrand1\tstrand2\tsvtype\tsize\torient\tmapq\tsplit_reads\tsplit_mapq\tsplit_consensus\tpid\taf\tgenotypes\trd_ratio\ttumor_count\tgerm_count\tBf\tdepth.ratio\tCNt\tA\tB\tCN_supp' > /home/roddy/empty_sv.tsv
+
