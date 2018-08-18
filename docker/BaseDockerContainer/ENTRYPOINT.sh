@@ -30,6 +30,11 @@ if ! grep -q $HOSTNAME /etc/hosts; then
 fi
 echo "$HOSTNAME" > /var/lib/gridengine/default/common/act_qmaster
 
+# define roddy as the user to run SGE (required by Singularity)
+NEW_BOOTSTRAP=$(sed -e "s/admin_user.*/admin_user $(whoami)/" /etc/gridengine/bootstrap)
+echo "$NEW_BOOTSTRAP" > /etc/gridengine/bootstrap
+echo "$NEW_BOOTSTRAP" > /var/lib/gridengine/default/common/bootstrap
+
 # launch qmaster
 /etc/init.d/gridengine-master start
 sleep 10

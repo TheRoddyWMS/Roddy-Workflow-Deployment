@@ -100,4 +100,5 @@ COPY config /home/roddy/config
 
 # import matplotlib once to build the font cache (fails inside a gridengine job, so we do it here)
 RUN bash -c "source activate IndelCallingWorkflow && python -c import\\ matplotlib.pyplot" && \
-    mv /home/roddy/.cache /home/roddy/writable.template/.cache && ln -s /home/roddy/writable/.cache /home/roddy/.cache # must be in a writable location for Singularity
+    mv /home/roddy/.cache /home/roddy/writable.template/.cache && ln -s /home/roddy/writable/.cache /home/roddy/.cache && \
+    mv /home/roddy/.config /home/roddy/writable.template/.config && ln -s /home/roddy/writable/.config /home/roddy/.config

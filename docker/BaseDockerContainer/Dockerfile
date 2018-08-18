@@ -91,7 +91,8 @@ RUN mkdir /home/roddy/writable.template && chmod a+rwx /home/roddy/writable.temp
     ln -s /home/roddy/writable/var_run_gridengine /var/run/gridengine
 
 # passwd and group files need to be updated at runtime to give roddy the same ID as the calling user
-RUN chmod a+rw /etc /etc/passwd /etc/group
+RUN chmod a+rw /etc /etc/passwd /etc/group && \
+    sed -i -e 's|/root|/home/roddy|' /etc/passwd # give root the same home as the roddy user to give both users the same environment
 
 USER roddy
 
