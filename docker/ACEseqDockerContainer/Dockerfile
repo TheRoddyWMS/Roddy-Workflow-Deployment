@@ -9,18 +9,18 @@ USER roddy
 
 # Install Bioconda
 
-RUN sudo apt-get update; sudo apt-get install -y bzip2 git
+RUN sudo apt-get update; sudo apt-get install -y bzip2 git curl
 
 RUN cd /home/roddy; \
-	echo "Download Anaconda https://repo.continuum.io/archive/Anaconda2-4.4.0-Linux-x86_64.sh"; \
-	wget -q https://repo.continuum.io/archive/Anaconda2-4.4.0-Linux-x86_64.sh && \
+	echo "Download Anaconda"; \
+	wget -q https://repo.continuum.io/miniconda/Miniconda3-4.5.1-Linux-x86_64.sh && \
 	echo "Install Anaconda" && \
-	sudo bash Anaconda2-4.4.0-Linux-x86_64.sh -b && \
-	rm -rf Anaconda2-4.4.0-Linux-x86_64.sh && \
+	sudo bash Miniconda3-4.5.1-Linux-x86_64.sh -b -p /home/roddy/miniconda3 && \
+	rm -rf Miniconda3-4.5.1-Linux-x86_64.sh && \
 	echo Done && \
-	export PATH=/home/roddy/anaconda2/bin/:$PATH
+	export PATH=/home/roddy/miniconda3/bin/:$PATH
 
-ENV PATH=/home/roddy/anaconda2/bin/:$PATH
+ENV PATH=/home/roddy/miniconda3/bin/:$PATH
 
 RUN env; \
 	conda config --add channels r; \

@@ -96,7 +96,8 @@ RUN cp -r /tmp/import_COWorkflows $CO_WORKFLOWS_FOLDER && \
 
 # install Conda packages
 COPY conda.yml $SNV_CALLING_FOLDER/resources/analysisTools/snvPipeline/environments/conda.yml
-RUN conda env create -n SNVCallingWorkflow -f $SNV_CALLING_FOLDER/resources/analysisTools/snvPipeline/environments/conda.yml
+RUN conda env create -n SNVCallingWorkflow -f $SNV_CALLING_FOLDER/resources/analysisTools/snvPipeline/environments/conda.yml && \
+    conda clean --all -y
 
 # copy workflow config
 COPY config /home/roddy/config

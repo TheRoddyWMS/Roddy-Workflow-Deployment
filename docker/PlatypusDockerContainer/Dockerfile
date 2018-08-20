@@ -91,9 +91,9 @@ RUN CONDA_BRANCH=e794e08 && \
     git show $CONDA_BRANCH:./conda.sh > conda.sh && chmod a+x conda.sh && \
     git show $CONDA_BRANCH:./conda.yml > conda.yml && \
     sed -i -e 's/r-purrr=.*/r-purrr=0.2.4=r341h470a237_1/' -e 's/python-dateutil=.*/python-dateutil=2.7.3=py_0/' conda.yml && \
-    conda env create -n IndelCallingWorkflow -f conda.yml
-
-RUN conda install -n IndelCallingWorkflow -y pypy2.7=5.10.0=0 perl-string-util=1.26=pl5.22.0_0 perl-number-misc=1.2=pl5.22.0_0 perl-test-toolbox=0.4=pl5.22.0_0
+    conda env create -n IndelCallingWorkflow -f conda.yml && \
+    conda install -n IndelCallingWorkflow -y pypy2.7=5.10.0=0 perl-string-util=1.26=pl5.22.0_0 perl-number-misc=1.2=pl5.22.0_0 perl-test-toolbox=0.4=pl5.22.0_0 && \
+    conda clean --all -y
 
 # copy workflow config
 COPY config /home/roddy/config
