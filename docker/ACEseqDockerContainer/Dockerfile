@@ -68,7 +68,10 @@ RUN cd $RODDY_PLUGINS_R2_4 && \
 	cd ACEseqWorkflow_1.2.10  &&  \
 	git checkout 1.2.10
 	
-RUN	conda env create -n ACEseqWorkflow -f $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml;
+RUN	sed -i -e 's/.*gsl.*//' $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml && \
+	conda env create -n ACEseqWorkflow -f $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml && \
+	conda install -n ACEseqWorkflow -y bedtools=2.24.0=0 blas=1.1=openblas libgcc-ng=7.2.0=hdf63c60_3 libgfortran=3.0.0=1 libstdcxx-ng=7.2.0=hdf63c60_3 numpy=1.11.3=py27_blas_openblashd3ea46f_205 openblas=0.2.20=8 gsl=2.4=blas_openblas_0 && \
+	conda clean --all -y
 
 # Install Groovy 2.4.7 from Maven. OpenJDK is already installed in the base image so just link it..
 RUN mkdir -p ~/.roddy/runtimeDevel && cd ~/.roddy/runtimeDevel && \
