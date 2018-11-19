@@ -10,11 +10,10 @@
 # 9: Reference files path
 # 10: Output folder
 # 11: Number of threads
-# 12: Optional: The SV file
 
-if [[ $# -lt 11 ]]; then
+if [[ $# -ne 11 ]]; then
 	echo "Wrong number of arguments"
-	head -n 13 "$0" | tail -n+2
+	head -n 12 "$0" | tail -n+2
 	exit 1
 fi
 
@@ -50,37 +49,26 @@ function checkDir() {
 
 [[ $mode -ne "run" && $mode -ne "testrun" ]] && echo "Mode must be run or testrun" && exit 2
 [ "$container" != "docker" -a "$container" != "singularity" ] && echo "Container must be docker or singularity" && exit 2
-checkFile $inputBamCtrl
-checkFile $inputBamTumor
-checkFile ${referenceGenomeFile}
-checkFile ${referenceGenomeFile}.fai
+checkFile $inputBamCtrl 
+checkFile $inputBamTumor 
 checkDir $referenceFilesPath 
 checkDir $workspace rw
 ! [[ $threads =~ ^[1-9]|1[0-9]|2[0-4]*$ ]] && echo "Number of threads must be between 1 and 24" && exit 2
 
-if [[ $# -eq 12 ]]; then
-	# Either use the provided SV file
-	svFile=`readlink -m ${12}`
-	checkFile $svFile
-	svBlock="svFile:${svFile}"
-else 
-	# or use an empty SV file to disable it.
-	svBlock="svFile:/home/roddy/empty_sv.tsv"
-fi
-
 # Define in-Docker files and folders
+
 roddyBinary="bash /home/roddy/binaries/Roddy/roddy.sh"
 roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
-baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
+hg19DatabasesDirectory="hg19DatabasesDirectory:${referenceFilesPath}"
 referenceGenome="REFERENCE_GENOME:${referenceGenomeFile}"
 outputBaseDirectory="outputBaseDirectory:${workspace}"
 outputFileGroup="outputFileGroup:roddy"
 
-call="${roddyBinary} ${mode} ACEseq@copyNumberEstimation ${pid} ${roddyConfig} --cvalues='${bamFiles},${svBlock},${sampleList},${sampleListParameters},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup}'"
+call="${roddyBinary} ${mode} Platypus@IndelCallingWorkflow ${pid} ${roddyConfig} --cvalues='${bamFiles},${sampleList},${sampleListParameters},${tumorSample},${referenceGenome},${hg19DatabasesDirectory},${outputBaseDirectory},${outputFileGroup}'"
 
 mkdir -p "${workspace}/${pid}"
 
@@ -91,12 +79,11 @@ if [ "$container" = "docker" ]; then
 		-v "${workspace}:${workspace}" \
 		-v "${referenceGenomeFile}:${referenceGenomeFile}:ro" -v "${referenceGenomeFile}.fai:${referenceGenomeFile}.fai:ro" \
 		-v "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		$([ -n "${svFile}" ] && echo -v "${svFile}:${svFile}:ro") \
 		--rm \
 		--shm-size=1G \
 		--user $(id -u):$(id -g) \
 		--env=THREADS=$threads \
-		aceseqimage \
+		platypusimage \
 		/bin/bash -c "$call"
 else
 	export SINGULARITYENV_THREADS=$threads
@@ -107,7 +94,6 @@ else
 		-B "${workspace}:${workspace}" \
 		-B "${referenceGenomeFile}:${referenceGenomeFile}:ro" -B "${referenceGenomeFile}.fai:${referenceGenomeFile}.fai:ro" \
 		-B "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		$([ -n "${svFile}" ] && echo -B "${svFile}:${svFile}:ro") \
 		--containall --net \
 		$(dirname "$0")/singularity.img \
 		/ENTRYPOINT.sh /bin/bash -c "$call"

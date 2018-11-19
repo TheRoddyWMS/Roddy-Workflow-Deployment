@@ -1,0 +1,114 @@
+<configuration name='coAppAndRef' description='Configuration which contains application names and reference files (like i.e. indices).'>
+    <configurationvalues>
+        <cvalue name="sharedFilesBaseDirectory" value="/icgc/ngs_share" type="path"/>
+        <cvalue name="assembliesBaseDirectory" value="${sharedFilesBaseDirectory}/assemblies" type="path"/>
+
+        <cvalue name="assembliesHG191000GenomesDirectory" value="${assembliesBaseDirectory}/hg19_GRCh37_1000genomes" type="path"/>
+
+        <cvalue name="bwaIndexBaseDirectory_human" value="${assembliesHG191000GenomesDirectory}/indexes/bwa" type="path"/>
+        <cvalue name="bwaIndexBaseDirectory_methylCtools_human" value="${assembliesHG191000GenomesDirectory}/indexes/methylCtools" type="path"/>
+
+        <cvalue name="referenceGenomeBaseDirectory_human" value="${assembliesHG191000GenomesDirectory}/sequence" type="path"/>
+        <cvalue name="chromosomeSizesBaseDirectory_human" value="${assembliesHG191000GenomesDirectory}/stats" type="path"/>
+        <cvalue name="targetRegionsBaseDirectory_human" value="${assembliesHG191000GenomesDirectory}/targetRegions" type="path"/>
+
+        <cvalue name="hg19DatabasesDirectory" value="${assembliesHG191000GenomesDirectory}/databases" type="path"/>
+        <cvalue name='hg19DatabaseUCSCDirectory' value='${hg19DatabasesDirectory}/UCSC' type="path"/>
+        <cvalue name='hg19DatabaseDBSNPDirectory' value='${hg19DatabasesDirectory}/dbSNP' type="path"/>
+        <cvalue name='hg19Database1000GenomesDirectory' value='${hg19DatabasesDirectory}/1000genomes' type="path"/>
+        <cvalue name='hg19DatabaseIMPUTEDirectory' value='${hg19Database1000GenomesDirectory}/IMPUTE' type="path"/>
+        <cvalue name='hg19DatabaseENCODEDirectory' value='${hg19DatabasesDirectory}/ENCODE' type="path"/>
+
+        <cvalue name="bwaIndexBaseDirectory_mm10" value="${assembliesBaseDirectory}/mm10/indexes/bwa" type="path"/>
+        <cvalue name="bwaIndexBaseDirectory_methylCtools_mm10" value="${assembliesBaseDirectory}/mm10/indexes/methylCtools" type="path"/>
+        <cvalue name="chromosomeSizesBaseDirectory_mm10" value="${assembliesBaseDirectory}/mm10/stats" type="path"/>
+        <cvalue name="targetRegionsBaseDirectory_mm10" value="${assembliesBaseDirectory}/mm10/targetRegions" type="path"/>
+
+        <cvalue name="bwaBinary_bwa078_bisulfit" value="bwa-0.7.8-bisulfite" type="string"/>
+        <cvalue name="bwaBinary_bwa0712_bisulfit" value="bwa-0.7.12-bisulfite" type="string"/>
+        <cvalue name="bwaBinary_bwa05" value="bwa-0.5.10" type="string"/>
+        <cvalue name="bwaBinary_bwa05_mt" value="bwa-0.5.10-tpx" type="string"/>
+        <cvalue name="bwaBinary_bwa05_accelerated" value="cnybwa" type="string"/>
+        <cvalue name="bwaBinary_bwa06" value="bwa-0.6.2" type="string"/>
+        <cvalue name="bwaBinary_bwa06_mt" value="bwa-0.6.2-tpx" type="string"/>
+        <cvalue name="bwaBinary_bwa06_accelerated" value="cnybwa-0.6.2" type="string"/>
+        <cvalue name="bwaBinary_bwa07" value="bwa-0.7.5a" type="string"/>
+        <cvalue name="bwaBinary_bwa077" value="bwa-0.7.7" type="string"/>
+        <!-- <cvalue name="bwaBinary_bwa077_accelerated" value="/opt/bb/bwa-0.7.7-r0.9/bin/bwa-bb" type="string"/>gibt's nicht mehr!-->
+        <cvalue name="bwaBinary_bwa078" value="bwa-0.7.8" type="string"/>
+        <cvalue name="bwaBinary_bwa078_accelerated" value="/opt/bb/bwa-0.7.8-r1.1/bin/bwa-bb" type="string"/>
+        <cvalue name="bwaBinary_bwa0710" value="bwa-0.7.10" type="string"/>
+
+        <!--1KG  - 1000 genome
+            hg19 - human genome v19
+            mm   - mouse genome v10 -->
+        <cvalue name="indexPrefix_bwa05_1KGRef" value="${bwaIndexBaseDirectory_human}/bwa05_1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name="indexPrefix_bwa05_hg19_chr" value="${bwaIndexBaseDirectory_human}/bwa05_hg19_chr/hg19bwaidx" type="path"/>
+        <cvalue name="indexPrefix_bwa06_1KGRef" value="${bwaIndexBaseDirectory_human}/bwa06_1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name="indexPrefix_bwa06_hg19_chr" value="${bwaIndexBaseDirectory_human}/bwa06_hg19_chr/hg19_1-22_X_Y_M.fasta" type="path"/>
+        <cvalue name="indexPrefix_bwa06_mm10_GRC" value="${bwaIndexBaseDirectory_mm10}/bwa06/bwa06_GRCm38mm10/GRCm38mm10.fa" type="path"/>
+        <cvalue name="indexPrefix_bwa06_mm10" value="${bwaIndexBaseDirectory_mm10}/bwa06/bwa06_mm10_UCSC/mm10_1-19_X_Y_M.fa" type="path"/>
+        <cvalue name="indexPrefix_bwa06_methylCtools_mm10_GRC" value="${bwaIndexBaseDirectory_methylCtools_mm10}/methylCtools_GRCm38mm10/GRCm38mm10_PhiX_Lambda" type="path"/>
+        <cvalue name="indexPrefix_bwa06_methylCtools_mm10_UCSC" value="${bwaIndexBaseDirectory_methylCtools_mm10}/methylCtools_mm10_UCSC/mm10_PhiX_Lambda" type="path"/>
+        <cvalue name="indexPrefix_bwa06_methylCtools_1KGRef" value="${bwaIndexBaseDirectory_methylCtools_human}/methylCtools_1KGRef/hs37d5_PhiX_Lambda" type="path"/>
+
+        <cvalue name="ch_pos_index_methylCtools_1KGRef" value="${bwaIndexBaseDirectory_methylCtools_human}/methylCtools_1KGRef/hs37d5_PhiX_Lambda.CG_CH.pos.gz" type="path"/>
+        <cvalue name="ch_pos_index_methylCtools_mm10GRC" value="${bwaIndexBaseDirectory_methylCtools_mm10}/methylCtools_GRCm38mm10/GRCm38mm10_PhiX_Lambda.pos.gz" type="path"/>
+        <cvalue name="ch_pos_index_methylCtools_mm10_UCSC" value="${bwaIndexBaseDirectory_methylCtools_mm10}/methylCtools_mm10_UCSC/mm10_PhiX_Lambda.pos.gzs" type="path"/>
+
+        <!-- TODO There should be a ruleset for optional rules. Also reference genomes should be checked. -->
+        <cvalue name="referenceGenome_1KGRef" value="${referenceGenomeBaseDirectory_human}/1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name="referenceGenome_hg19_chr" value="${referenceGenomeBaseDirectory_human}/hg19_chr/hg19_1-22_X_Y_M.fa" type="path"/>
+
+        <!-- Chromosome sizes file for hg 19 -->
+        <cvalue name='chromosomeSizesFile_hg19' value='${chromosomeSizesBaseDirectory_human}/hg19_1-22_X_Y_M.fa.chrLenOnlyACGT.tab' type="path"/>
+
+        <!-- Chromosome sizes file for 1000 genome -->
+        <cvalue name='chromosomeSizesFile_hs37' value='${chromosomeSizesBaseDirectory_human}/hs37d5.fa.chrLenOnlyACGT_realChromosomes.tab' type="path"/>
+        <cvalue name='chromosomeSizesFile_mm10_GRC' value='${chromosomeSizesBaseDirectory_mm10}/GRCm38mm10.fa.chrLenOnlyACGT_realChromosomes.tab' type="path"/>
+        <cvalue name='chromosomeSizesFile_mm10' value='${chromosomeSizesBaseDirectory_mm10}/mm10_1-19_X_Y_M.fa.chrLenOnlyACGT_realChromosomes.tab' type="path"/>
+        <cvalue name='chromosomeSizesFile_hs37_bisulfite' value='${chromosomeSizesBaseDirectory_human}/hs37d5_PhiX_Lambda.fa.chrLenOnlyACGT.tab' type="path"/>
+        <cvalue name='chromosomeSizesFile_mm10_GRC_bisulfite' value='${chromosomeSizesBaseDirectory_mm10}/GRCm38mm10_PhiX_Lambda.fa.chrLenOnlyACGT.tab' type="path"/>
+        <cvalue name='chromosomeSizesFile_mm10_UCSC_bisulfite' value='${chromosomeSizesBaseDirectory_mm10}/mm10_PhiX_Lambda.fa.chrLenOnlyACGT.tab' type="path"/>
+        <cvalue name='chromosomeLengthFile_hg19' value='${chromosomeSizesBaseDirectory_human}/hg19_chrTotalLength.tsv' type="path"/>
+
+        <cvalue name='targetRegions_Agilent4withoutUTRs_chr' value='${targetRegionsBaseDirectory_human}/Agilent4withoutUTRs_chr.bed.gz' type="path"/>
+        <cvalue name='targetRegions_Agilent4withoutUTRs_plain' value='${targetRegionsBaseDirectory_human}/Agilent4withoutUTRs_plain.bed.gz' type="path"/>
+        <cvalue name='targetRegions_Agilent4withUTRs_plain' value='${targetRegionsBaseDirectory_human}/Agilent4withUTRs_plain.bed.gz' type="path"/>
+        <cvalue name='targetRegions_Agilent5withoutUTRs_chr' value='${targetRegionsBaseDirectory_human}/Agilent5withoutUTRs_chr.bed.gz' type="path"/>
+        <cvalue name='targetRegions_Agilent5withoutUTRs_plain' value='${targetRegionsBaseDirectory_human}/Agilent5withoutUTRs_plain.bed.gz' type="path"/>
+        <cvalue name='targetRegions_Agilent5withUTRs_chr' value='${targetRegionsBaseDirectory_human}/Agilent5withUTRs_chr.bed.gz' type="path"/>
+        <cvalue name='targetRegions_Agilent5withUTRs_plain' value='${targetRegionsBaseDirectory_human}/Agilent5withUTRs_plain.bed.gz' type="path"/>
+
+        <cvalue name="dbSNP_FILE" value="${hg19DatabasesDirectory}/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${hg19DatabaseENCODEDirectory}/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+
+        <cvalue name='SNP_REFERENCE' value='${assembliesHG191000GenomesDirectory}/sequence/hg19_chr/hg19_1-22_X_Y_M.fa' type="path"/>
+        <cvalue name='SNP_REFERENCE_ANNOTATIONS' value='${assembliesHG191000GenomesDirectory}/Affymetrics/Affy5/chr/#CHROM#_AFFY.vcf' type="path"/>
+
+        <!-- Rules for bwa versions and files compatibility -->
+        <cvalue name='cfgValidationRule_bwaSettings_bwa05-hs37'
+                value='BWA_BINARY=bwaBinary_bwa05/bwaBinary_bwa05_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa05_accelerated;INDEX_PREFIX=indexPrefix_bwa05_1KGRef;CHROM_SIZES_FILE=chromosomeSizesFile_hs37'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa05-hg19'
+                value='BWA_BINARY=bwaBinary_bwa05/bwaBinary_bwa05_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa05_accelerated;INDEX_PREFIX=indexPrefix_bwa05_hg19_chr;CHROM_SIZES_FILE=chromosomeSizesFile_hg19'/>
+
+        <cvalue name='cfgValidationRule_bwaSettings_bwa06-hs37'
+                value='BWA_BINARY=bwaBinary_bwa06/bwaBinary_bwa06_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa06_accelerated;INDEX_PREFIX=indexPrefix_bwa06_1KGRef;CHROM_SIZES_FILE=chromosomeSizesFile_hs37'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa06-hg19'
+                value='BWA_BINARY=bwaBinary_bwa06/bwaBinary_bwa06_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa06_accelerated;INDEX_PREFIX=indexPrefix_bwa06_hg19_chr;CHROM_SIZES_FILE=chromosomeSizesFile_hg19'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa06-mm10-GRC'
+                value='BWA_BINARY=bwaBinary_bwa06/bwaBinary_bwa06_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa06_accelerated;INDEX_PREFIX=indexPrefix_bwa06_mm10_GRC;CHROM_SIZES_FILE=chromosomeSizesFile_mm10_GRC'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa06-mm10'
+                value='BWA_BINARY=bwaBinary_bwa06/bwaBinary_bwa06_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa06_accelerated;INDEX_PREFIX=indexPrefix_bwa06_mm10;CHROM_SIZES_FILE=chromosomeSizesFile_mm10'/>
+
+        <cvalue name='cfgValidationRule_bwaSettings_bwa07-hs37' value='BWA_BINARY=bwaBinary_bwa07;BWA_ACCELERATED_BINARY=bwaBinary_bwa077_accelerated;INDEX_PREFIX=indexPrefix_bwa06_1KGRef;CHROM_SIZES_FILE=chromosomeSizesFile_hs37'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa077-hs37' value='BWA_BINARY=bwaBinary_bwa077;BWA_ACCELERATED_BINARY=bwaBinary_bwa077_accelerated;INDEX_PREFIX=indexPrefix_bwa06_1KGRef;CHROM_SIZES_FILE=chromosomeSizesFile_hs37'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa078-hs37' value='BWA_BINARY=bwaBinary_bwa078;BWA_ACCELERATED_BINARY=bwaBinary_bwa078_accelerated;INDEX_PREFIX=indexPrefix_bwa06_1KGRef;CHROM_SIZES_FILE=chromosomeSizesFile_hs37'/>
+
+        <cvalue name='cfgValidationRule_bwaSettings_bwa06-hs38'
+                value='BWA_BINARY=bwaBinary_bwa06/bwaBinary_bwa06_mt;BWA_ACCELERATED_BINARY=bwaBinary_bwa06_accelerated;INDEX_PREFIX=indexPrefix_bwa06_hg_GRCh38;CHROM_SIZES_FILE=chromosomeSizesFile_hg_GRCh38'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa07-hs38' value='BWA_BINARY=bwaBinary_bwa077;INDEX_PREFIX=indexPrefix_bwa06_hg_GRCh38;CHROM_SIZES_FILE=chromosomeSizesFile_hg_GRCh38'/>
+        <cvalue name='cfgValidationRule_bwaSettings_bwa078-hs38' value='BWA_BINARY=bwaBinary_bwa078;INDEX_PREFIX=indexPrefix_bwa06_hg_GRCh38;CHROM_SIZES_FILE=chromosomeSizesFile_hg_GRCh38'/>
+
+    </configurationvalues>
+</configuration>

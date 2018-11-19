@@ -1,0 +1,40 @@
+<configuration name='cofilenames' description='This file contains patterns for filename generation and default configured paths for our computational oncology file structure.' >
+    <configurationvalues>
+
+        <!-- Input and output paths -->
+        <cvalue name='testDataFS' value='${PWD}/temp' type="path" />
+        <cvalue name='testDataDirectory' value='${testDataFS}/roddyTestdata/data/${projectName}/${testDataOptionID}/${analysisMethodNameOnInput}/view-by-pid' type="path" />
+        <cvalue name='testDataOutputBaseDirectory' value='${testDataFS}/roddyTestdata/results/${projectName}/${testDataOptionID}/${analysisMethodNameOnOutput}/results_per_pid' type="path" />
+
+        <!-- Upon running a workflow with test data the sourceFS value will be replaced by the testdataFS value
+             Also the outputBaseDirectory will be replaced by the testdataOutputDirectory for the creation of test data-->
+        <cvalue name='sourceFS' value='/icgc/dkfzlsdf' />
+
+        <cvalue name='inputBaseDirectory' value='${sourceFS}/project/${projectName}/sequencing/${analysisMethodNameOnInput}/view-by-pid' type='path'/>
+        <cvalue name='sampleDirectory' value='${inputBaseDirectory}/${pid}/${sample}/${library}/${SEQUENCER_PROTOCOL}' type='path'/>
+        <cvalue name='sequenceDirectory' value='${sampleDirectory}/${run}/sequence' type='path'/>
+
+        <cvalue name='outputBaseDirectory' value='${sourceFS}/analysis/${projectName}/results_per_pid' type='path'/>
+        <cvalue name='outputAnalysisBaseDirectory' value='${outputBaseDirectory}/${pid}/${analysisMethodNameOnOutput}' type='path'/>
+        <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}' /> <!-- The execution time string is set during runtime -->
+
+        <cvalue name='mergedBamSuffix_markDuplicates' value='merged.bam.dupmarked.bam' type="string" />
+        <cvalue name='mergedBamSuffix_markDuplicatesShort' value='merged.mdup.bam' type="string" />
+        <cvalue name='mergedBamSuffix_removeDuplicates' value='merged.bam.rmdup.bam' type="string" />
+        <cvalue name='mergedBamSuffixList' value='${mergedBamSuffix_markDuplicates},${mergedBamSuffix_markDuplicatesShort},${mergedBamSuffix_removeDuplicates}' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..." />
+        <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix_markDuplicatesShort}' type="string" description="The default suffix for merged bam files when they are created by Roddy." />
+        <cvalue name='pairedBamSuffix' value='paired.bam.sorted.bam' type="string" />
+
+        <!-- Output sub directories have to contain the String OutputDirectory -->
+        <cvalue name='alignmentOutputDirectory' value='alignment' type="path"/>
+        <cvalue name='fastx_qcOutputDirectory' value='fastx_qc' type="path"/>
+        <cvalue name='coverageOutputDirectory' value='coverage' type="path"/>
+        <cvalue name='flagstatsOutputDirectory' value='flagstats' type="path"/>
+        <cvalue name='structuralVariationOutputDirectory' value='structural_variation' type="path"/>
+        <cvalue name='insertSizesOutputDirectory' value='insertsize_distribution' type="path"/>
+        <cvalue name='metricsOutputDirectory' value='metrics' type="path"/>
+        <cvalue name='mpileupOutputDirectory' value='mpileup' type="path"/>
+        <cvalue name='mpileupPlatypusOutputDirectory' value='platypus_indel' type="path"/>
+        <!--<cvalue name='cnvSnpOutputDirectory' value='cnv_snp'/>-->
+    </configurationvalues>
+</configuration>
