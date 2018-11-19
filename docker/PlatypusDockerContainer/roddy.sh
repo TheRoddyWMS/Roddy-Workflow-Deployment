@@ -1,6 +1,6 @@
 #!/bin/bash
 # 1: Run mode, which might be "run" or "testrun"
-# 2: Configuration identifier, normally "ACEseq"
+# 2: Configuration identifier, normally "Platypus"
 # 3: Configuration directory
 # 4: Dataset identifier / PID
 # 5: Control bam file
@@ -10,11 +10,10 @@
 # 9: Reference genome file
 # 10: Reference files path
 # 11: Output folder
-# 12: Optional: The SV file
 
-if [[ $# -lt 11 ]]; then
+if [[ $# -ne 11 ]]; then
 	echo "Wrong number of arguments"
-	head -n 13 "$0" | tail -n+2
+	head -n 12 "$0" | tail -n+2
 	exit 1
 fi
 
@@ -51,20 +50,8 @@ function checkDir() {
 [[ $mode -ne "run" && $mode -ne "testrun" ]] && echo "Mode must be run or testrun" && exit 2
 checkFile $inputBamCtrlLcl 
 checkFile $inputBamTumorLcl 
-checkFile ${referenceGenomeFile}
 checkDir $referenceFilesPath 
 checkDir $workspaceLcl rw
-
-if [[ $# -eq 12 ]]; then
-	# Either use the file
-	svFile=`readlink -f ${12}`
-	checkFile $svFile
-	svBlock="svFile:${svFile}"
-	svFileMount="-v ${svFile}:${svFile}:ro"
-else 
-	# or explicitely disable it.
-	svBlock="runWithSv:false,SV:no"
-fi
 
 # Define in-Docker files and folders
 
@@ -78,7 +65,7 @@ roddyConfig="--useconfig=/home/roddy/config/ini/alllocal.ini"
 bamFiles="bamfile_list:$inputBamCtrl;$inputBamTumor"
 sampleList="sample_list:${inputBamCtrlSampleName};${inputBamTumorSampleName}"
 tumorSample="tumorSample:${inputBamTumorSampleName}"
-baseDirectoryReference="baseDirectoryReference:${referenceFilesPath}"
+hg19DatabasesDirectory="hg19DatabasesDirectory:${referenceFilesPath}"
 referenceGenome="REFERENCE_GENOME:${referenceGenomeFile}"
 referenceGenomePath=`dirname ${referenceGenomeFile}`
 outputBaseDirectory="outputBaseDirectory:${workspace}"
@@ -86,23 +73,22 @@ outputFileGroup="outputFileGroup:roddy"
 sampleListParameters="possibleTumorSampleNamePrefixes:(${inputBamTumorSampleName}),possibleControlSampleNamePrefixes:(${inputBamCtrlSampleName})"
 
 sampleXML=/home/roddy/additionalConfigs/sampleNames.xml
-prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/config/xml/sampleConfigTemplate.txt $sampleXML && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' $sampleXML && sed -i  -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/' $sampleXML "
+prepareAdditionalConfigCall="mkdir /home/roddy/additionalConfigs && cp /home/roddy/config/xml/sampleConfigTemplate.txt $sampleXML && sed -i  -e 's/CONTROL_SAMPLE/${inputBamCtrlSampleName}/' $sampleXML && sed -i -e 's/TUMOR_SAMPLE/${inputBamTumorSampleName}/' $sampleXML "
 
-call="${roddyBinary} ${mode} ${configurationIdentifier}@copyNumberEstimation ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${svBlock},${sampleList},${tumorSample},${referenceGenome},${baseDirectoryReference},${outputBaseDirectory},${outputFileGroup}\""
+call="${roddyBinary} ${mode} ${configurationIdentifier}@IndelCallingWorkflow ${pid} ${roddyConfig} --cvalues=\"${bamFiles},${sampleList},${tumorSample},${referenceGenome},${hg19DatabasesDirectory},${outputBaseDirectory},${outputFileGroup}\""
 
 absoluteCall="[[ ! -d ${workspace}/${pid} ]] && mkdir ${workspace}/${pid}; $prepareAdditionalConfigCall ;$call; echo \"Wait for Roddy to finish\"; "'while [[ 2 -lt $(qstat | wc -l ) ]]; do echo $(expr $(qstat | wc -l) - 2 )\" jobs are still in the list\"; sleep 120; done;'" echo \"done\"; ec=$?"
- 
+
 docker run \
-		-v "${inputBamCtrlLcl}:${inputBamCtrl}:ro" -v "${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro" \
-		-v "${inputBamTumorLcl}:${inputBamTumor}:ro" -v "${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro" \
-		-v "${workspaceLcl}:${workspace}" \
-		-v "${referenceGenomePath}:${referenceGenomePath}:ro" \
-		-v "${referenceFilesPath}:${referenceFilesPath}:ro" \
-		-v "${configurationFolderLcl}:${configurationFolder}:ro" \
-		${svFileMount} \
+		-v ${inputBamCtrlLcl}:${inputBamCtrl}:ro -v ${inputBamCtrlLcl}.bai:${inputBamCtrl}.bai:ro \
+		-v ${inputBamTumorLcl}:${inputBamTumor}:ro -v ${inputBamTumorLcl}.bai:${inputBamTumor}.bai:ro \
+		-v ${workspaceLcl}:${workspace} \
+		-v ${referenceGenomePath}:${referenceGenomePath}:ro \
+		-v "${referenceFilesPath}:${referenceFilesPath}":ro \
+		-v "${configurationFolderLcl}:${configurationFolder}":ro \
 		--rm \
 		--shm-size=1G \
 		--user 0 --env=RUN_AS_UID=`id -u` --env=RUN_AS_GID=`id -g` \
-		-t -i aceseqimage \
+		-t -i platypusimage \
 		/bin/bash -c "$absoluteCall"
 
