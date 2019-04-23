@@ -66,7 +66,8 @@ RUN mkdir -p $BINARIES_FOLDER && cd $BINARIES_FOLDER && \
 RUN cd $RODDY_PLUGINS_R2_4 && \
 	git  clone https://github.com/eilslabs/ACEseqWorkflow ACEseqWorkflow_1.2.10 && \
 	cd ACEseqWorkflow_1.2.10  &&  \
-	git checkout 1.2.10
+	git checkout 1.2.10 && \
+	sed -i -e 's/[ \t]\${EMAIL}[ \t]/ "${EMAIL}" /g' $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/correct_gc_bias*.sh # wrap variable in quotes, or else e-mail is sent, even when $EMAIL is empty
 	
 RUN	sed -i -e 's/.*gsl.*//' $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml && \
 	conda env create -n ACEseqWorkflow -f $ACESEQ_FOLDER/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml && \
