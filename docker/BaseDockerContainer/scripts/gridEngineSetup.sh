@@ -83,37 +83,40 @@ function installGridEngine() {
     qconf -am roddy
     qconf -au roddy users
     qconf -as $HOST
+	# define roddy as the user to run SGE (required by Singularity)
+	sed -i -e 's/admin_user.*/admin_user roddy/' /etc/gridengine/bootstrap /var/lib/gridengine/default/common/bootstrap
+	# make SGE-related files readable by everyone so that any user can run SGE
+	chmod -R a+rx /var/spool/gridengine
+}
+
+# some parameters of gridengine can only be modified using an interactive editor
+# this function creates a temporary non-interactive script that mimicks an interactive editor
+# Usage: changeGridEngineConfig PARAMETER_TO_CHANGE NEW_VALUE QCONF_ARGUMENTS
+function changeGridEngineConfig() {
+PARAMETER="$1"
+VALUE="$2"
+QCONF_ARGS="$3"
+NEW_QCONF=$(mktemp)
+cat > "$NEW_QCONF" <<EOF
+#!/bin/bash
+sleep 1
+sed -i -e 's|$PARAMETER.*|$PARAMETER $VALUE|' "\$1"
+EOF
+chmod a+x "$NEW_QCONF"
+(export EDITOR="$NEW_QCONF"; qconf $QCONF_ARGS)
+rm -f "$NEW_QCONF"
 }
 
 function setupGridEngine() {
-cat >/tmp/qconf-editor.sh <<EOF
-#!/bin/sh
-sleep 1
-perl -pi -e 's/^hostname.*$/hostname $hostName/' \$1
-EOF
-
-chmod +x /tmp/qconf-editor.sh
-export EDITOR=/tmp/qconf-editor.sh
-qconf -ae
-cat >/tmp/qconf-editor.sh <<EOF
-#!/bin/sh
-sleep 1
-perl -pi -e 's/^hostlist.*$/hostlist $hostName/' \$1
-EOF
-
-cat /tmp/qconf-editor.sh
-
-chmod +x /tmp/qconf-editor.sh
-export EDITOR=/tmp/qconf-editor.sh
-qconf -ahgrp @allhosts
-qconf -mhgrp @allhosts
-qconf -aattr hostgroup hostlist $hostName @allhosts
-qconf -aq main.q
-qconf -mq main.q
+changeGridEngineConfig hostname "$hostName" -ae
+changeGridEngineConfig group_name @allhosts -ahgrp
+changeGridEngineConfig hostlist "$hostName" "-mhgrp @allhosts"
+qconf -aattr hostgroup hostlist "$hostName" @allhosts
+changeGridEngineConfig qname main.q "-aq main.q"
 qconf -aattr queue hostlist @allhosts main.q
 qconf -aattr queue slots "[$hostName=`nproc`]" main.q
 qconf -mattr queue load_thresholds "np_load_avg=`nproc`" main.q
-qconf -rattr exechost complex_values s_data=`free -b |grep Mem | cut -d" " -f5` $hostName
+qconf -rattr exechost complex_values s_data=`free -b |grep Mem | cut -d" " -f5` "$hostName"
 TMPPROFILE=/tmp/serial.profile
 echo "pe_name           serial
 	slots             9999
@@ -136,4 +139,5 @@ sleep 4
 pkill -9 sge_execd
 pkill -9 sge_qmaster
 sleep 4
+rm -f /var/spool/gridengine/qmaster/lock
 }

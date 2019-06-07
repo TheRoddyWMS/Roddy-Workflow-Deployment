@@ -1,0 +1,67 @@
+<configuration configurationType='project' name='coBaseProject' description='Base configuration for co projects.' imports='cofilenames,coAppAndRef' >
+    <configurationvalues>
+        <cvalue name="alignmentThreads" value="12" type="string"/>
+
+        <cvalue name='outputUMask' value='007' type='string'/>
+        <cvalue name='outputFileGroup' value='B080'/>
+        <cvalue name='outputAccessRights' value='u+rw,g+rw,o-rwx'/>
+        <cvalue name='outputAccessRightsForDirectories' value='u+rwx,g+rwx,o-rwx'/>
+
+        <cvalue name='possibleControlSampleNamePrefixes' value='( blood BLOOD normal control CONTROL buffy_coat GERMLINE )' type='bashArray'/>
+        <cvalue name='possibleTumorSampleNamePrefixes' value='( tumor TUMOR metastasis xenograft disease DISEASE relapse RELAPSE autopsy AUTOPSY metastasis METASTASIS )' type='bashArray'/>
+
+        <cvalue name="useCentralAnalysisArchive" value="true"/>
+        <cvalue name="enableJobProfiling" value="false"/>
+
+        <cvalue name="JOB_PROFILER_BINARY" value="strace.sh"/>
+
+        <cvalue name='INDEX_PREFIX' value='${indexPrefix_bwa05_hg19_chr}' type="path"/>
+        <cvalue name='BWA_ALIGNMENT_OPTIONS' value='"-q 20"'/>
+        <cvalue name='BWA_SAMPESORT_OPTIONS' value='"-a 1000"'/>
+        <cvalue name="SAMPESORT_MEMSIZE" value="2000000000" type="integer"/>
+
+        <cvalue name="JAVA_BINARY" value="java" type="filename"/>
+        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
+        <cvalue name="TABIX_BINARY" value="tabix" type="filename"/>
+        <cvalue name="PERL_BINARY" value="perl" type="string"/>
+        <cvalue name="PYTHON_BINARY" value="/ibios/tbi_cluster/11.4/x86_64/python/python/bin/python" type="path"/>
+        <cvalue name="PYPY_BINARY" value="pypy-c" type="string"/>
+        <cvalue name="RSCRIPT_BINARY" value="Rscript" type="string"/>
+        <cvalue name="MBUFFER_BINARY" value="mbuffer" type="string"/>
+        <cvalue name="PICARD_BINARY" value="picard-1.125.sh" type="string"/>
+
+        <cvalue name='INTERSECTBED_BINARY' value='intersectBed' type='filename'/>
+        <cvalue name='COVERAGEBED_BINARY' value='coverageBed' type="filename"/>
+
+        <cvalue name="BWA_BINARY" value="${bwaBinary_bwa05_mt}" type="filename"/>
+        <cvalue name="BWA_ACCELERATED_BINARY" value="${bwaBinary_bwa05_accelerated}" type="filename"/>
+        <cvalue name="BWA_MEM_OPTIONS" value='" -T 0 "' type="string"/>
+        <cvalue name="BWA_MEM_CONVEY_ADDITIONAL_OPTIONS" value='"--bb_cny_timeout=5000000000 --bb_profile=1 -t 8"' type="string"/>
+        <cvalue name="FASTAFROMBED_BINARY" value="/ibios/tbi_cluster/11.4/x86_64/bin/fastaFromBed" type="path"/>
+        <cvalue name="BCFTOOLS_BINARY" value="bcftools-0.1.19" type="filename"/>
+        <cvalue name="VCFTOOLS_SORT_BINARY" value="/ibios/tbi_cluster/11.4/x86_64/bin/vcf-sort" type="filename"/>
+        <cvalue name="FASTQC_BINARY" value="fastqc" type="filename"/>
+        <cvalue name="SAMTOOLS_BINARY" value="samtools-0.1.19" type="filename"/>
+        <cvalue name="SAMBAMBA_BINARY" value="sambamba_v0.4.6" type="string"/>
+        <cvalue name="BAMSORT_BINARY" value="/ibios/tbi_cluster/11.4/x86_64/bin/bamsort" type="string"/>
+        <cvalue name="MARKDUPLICATES_BINARY" value="/ibios/tbi_cluster/11.4/x86_64/bin/bammarkduplicates" type="string"/>
+
+        <cvalue name="mergeAndRemoveDuplicates_optionMarkDuplicates" value='" REMOVE_DUPLICATES=FALSE"' type="string"/>
+        <cvalue name="mergeAndRemoveDuplicates_removeDuplicates" value='" REMOVE_DUPLICATES=TRUE"' type="string"/>
+        <cvalue name="mergeAndRemoveDuplicates_argumentList" value='${mergeAndRemoveDuplicates_optionMarkDuplicates}' type="string"/>
+
+        <cvalue name='LIB_ADD' value='addToOldLib'/>
+
+        <cvalue name='QUAL' value='phred' description="Default quality is phred, can be illumina."/>
+
+        <cvalue name='SNP_MINCOVERAGE' value='16'/>
+        <cvalue name='SNP_MAXCOVERAGE' value='300'/>
+        <!-- TODO make validation rule for chrom sizes file and chr_prefix -->
+        <cvalue name='CHROM_SIZES_FILE' value='${chromosomeSizesFile_hg19}' type="path"/>
+
+        <cvalue name='CLIP_INDEX' value='$DIR_EXECUTION/analysisTools/qcPipeline/trimmomatic/adapters/TruSeq3-PE.fa' type="path"/>
+        <cvalue name='ADAPTOR_TRIMMING_OPTIONS_0' value='"PE -threads 12 -phred33"'/>
+        <cvalue name='ADAPTOR_TRIMMING_OPTIONS_1' value='"ILLUMINACLIP:$CLIP_INDEX:2:30:10:8:true SLIDINGWINDOW:4:15 MINLEN:36"'/>
+
+    </configurationvalues>
+</configuration>
