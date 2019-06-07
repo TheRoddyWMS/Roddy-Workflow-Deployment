@@ -26,6 +26,18 @@
 
     <processingTools>
       <tool name="workflowEnvironment_conda" value="conda.sh" basepath="snvPipeline/environments"/>
+      <tool name="snvAnnotation" value="snvAnnotation.sh" basepath="snvPipeline">
+        <resourcesets>
+          <rset size="l" memory="3" cores="2" nodes="1" walltime="1200"/>
+        </resourcesets>
+        <input type="file" typeof="de.dkfz.b080.co.files.SNVAnnotationFile" scriptparameter="FILENAME_VCF_IN"/>
+        <input type="file" typeof="de.dkfz.b080.co.files.BamFile" scriptparameter="TUMOR_BAMFILE_FULLPATH_BP"/>
+        <!-- TODO Think of other possibilities for passas, so i.e. passas="indexedParameters" -->
+        <output type="filegroup" typeof="de.dkfz.b080.co.files.VCFFileWithCheckpointFile">
+          <output type="file" typeof="de.dkfz.b080.co.files.SNVAnnotationFile" scriptparameter="FILENAME_VCF_OUT"/>
+          <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT"/>
+        </output>
+      </tool>
     </processingTools>
 
 </configuration>

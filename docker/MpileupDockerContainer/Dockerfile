@@ -89,6 +89,8 @@ COPY SNVCallingWorkflow /tmp/import_SNVCallingWorkflow
 RUN cp -r /tmp/import_SNVCallingWorkflow $SNV_CALLING_FOLDER && \
     cd $SNV_CALLING_FOLDER && git checkout e28c25d && \
     sed -i -e 's/COWorkflows:[-.0-9]*/COWorkflows:1.2.3-1/' buildinfo.txt
+# patch paired-end filter for improved speed (i.e., open SAM file outside of loop)
+RUN awk -v SAM_OPEN="    samfile = pysam.Samfile(options.alignmentFile, \"rb\" )\r" -v SAM_CLOSE="    samfile.close()\r" '!index($0, SAM_OPEN) && !index($0, SAM_CLOSE){print} FNR==85{print SAM_OPEN} FNR==236{print SAM_CLOSE}' $SNV_CALLING_FOLDER/resources/analysisTools/snvPipeline/filter_PEoverlap.py
 COPY COWorkflows /tmp/import_COWorkflows
 RUN cp -r /tmp/import_COWorkflows $CO_WORKFLOWS_FOLDER && \
     cd $CO_WORKFLOWS_FOLDER && git checkout 1.2.3-1 && \
